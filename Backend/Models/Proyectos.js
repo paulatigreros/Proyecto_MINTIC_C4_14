@@ -1,5 +1,4 @@
-const { ObjectId } = require('bson');
-const { Schema, model } = require('mongoose');
+import { Schema,model} from 'mongoose';
 
 const ProyectosSchema = Schema({
 
@@ -76,4 +75,4 @@ const ProyectosSchema = Schema({
     }
 
 })
-module.exports = model('ProyectosModelo', ProyectosSchema);
+export default model ('Proyectos', ProyectosSchema);

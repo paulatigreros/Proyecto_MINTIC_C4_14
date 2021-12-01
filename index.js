@@ -1,21 +1,23 @@
-const { MongoClient } = require('mongodb');
-const mongoose = require("mongoose");
-const schema = require("./Backend/graphql/schema");
 const express = require('express');
 const { graphqlHTTP } = require("express-graphql");
+import schema from "./Backend/graphql/schema.js";
+const { MongoClient } = require('mongodb');
+const mongoose = require("mongoose");
 const app = express();
+import dbConnection from "./Backend/database/config.js";
 
 
+/* const dbConnection=async() => {
+    try{
+        await mongoose.connect("mongodb+srv://ProyectoMinticC4:12345@cluster0.p2upl.mongodb.net/ProyectoCiclo4");
+        console.log('conectado correctamente');
+    }catch(error){
+        console.log('error');
+        throw new Error('error al iniciar base de datos');
+    }
+}; */
 
-const url = 'mongodb+srv://ProyectoMinticC4:12345@cluster0.p2upl.mongodb.net/'
-const client = new MongoClient(url);
-const dbName = 'ProyectoCiclo4';
-
-async function main() {
-    await client.connect();
-    console.log("Conexión establecida exitosamente");
-    return 'done';
-};
+dbConnection();
 
 app.listen(process.env.PORT || 4000, () => {
     console.log(`servidor corriendo en el puerto ${process.env.Port || 4000}`);
@@ -29,7 +31,7 @@ app.use("/graphql", graphqlHTTP({
 
 
 
-main()
+/* main()
     .then(console.log)
     .catch(console.error)
-    .finally(() => client.close());
+    .finally(() => client.close()); */
