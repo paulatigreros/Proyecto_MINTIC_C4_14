@@ -1,13 +1,12 @@
 import express from "express";
 import { graphqlHTTP } from "express-graphql";
-/* import schema from "./graphql/schema" */
+import schema from "../graphql/schema";
 import { dbConnection } from "../database/config";
 
 
 dbConnection();
 const app = express();
 
-const schema = {};
 
 app.use("/graphql", graphqlHTTP({
     graphiql : true,
