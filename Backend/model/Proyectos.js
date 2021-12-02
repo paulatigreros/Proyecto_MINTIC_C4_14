@@ -1,6 +1,6 @@
-import { Schema,model} from 'mongoose';
+import mongoose from "mongoose";
 
-const ProyectosSchema = Schema({
+const ProyectosSchema = mongoose.Schema({
 
     nombreProyecto:{
         type: String,
@@ -52,7 +52,7 @@ const ProyectosSchema = Schema({
 
     integrante:{
         usuario:{
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: 'UsuariosModelo',
             require: true
         },
@@ -72,7 +72,7 @@ const ProyectosSchema = Schema({
             require: true
         }
 
-    }
+    } 
 
 })
-export default model ('Proyectos', ProyectosSchema);
+export default mongoose.model ("Proyectos", ProyectosSchema);

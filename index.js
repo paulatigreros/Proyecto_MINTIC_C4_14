@@ -1,21 +1,12 @@
-const express = require('express');
-const { graphqlHTTP } = require("express-graphql");
-import schema from "./Backend/graphql/schema.js";
-const { MongoClient } = require('mongodb');
-const mongoose = require("mongoose");
+import express from "express";
+import { graphqlHTTP } from "express-graphql";
+/* import schema from "./Backend/graphql/schema.js" */
+/* const { MongoClient } = require('mongodb'); */
+import mongoose from "mongoose";
 const app = express();
 import dbConnection from "./Backend/database/config.js";
+import schema from "./Backend/graphql/schema.js";
 
-
-/* const dbConnection=async() => {
-    try{
-        await mongoose.connect("mongodb+srv://ProyectoMinticC4:12345@cluster0.p2upl.mongodb.net/ProyectoCiclo4");
-        console.log('conectado correctamente');
-    }catch(error){
-        console.log('error');
-        throw new Error('error al iniciar base de datos');
-    }
-}; */
 
 dbConnection();
 

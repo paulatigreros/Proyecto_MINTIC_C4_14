@@ -1,4 +1,4 @@
-import Proyectos from "../Models/Proyectos.js";
+import Proyectos from "../model/Proyectos.js";
 export const resolvers = {
     Query:{
         Cursos() {
