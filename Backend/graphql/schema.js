@@ -95,7 +95,7 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args) {
               console.log(args);
-              const Proyecto = new Proyecto({
+              const Proyecto = new Proyectos({
                 nombreProyecto: args.nombreProyecto,
                 objetivosGenerales: args.objetivosGenerales,
                 objetivosEspecificos: args.objetivosEspecificos,
@@ -104,7 +104,7 @@ const Mutation = new GraphQLObjectType({
                 estadoActual:args.estadoActual,
                 fase:args.fase
               });
-              return await Proyectos.save();
+              return await Proyecto.save();
             },
           },
     
