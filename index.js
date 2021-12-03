@@ -4,8 +4,9 @@ const schema = require("./Backend/graphql/schema");
 const express = require('express');
 const { graphqlHTTP } = require("express-graphql");
 const app = express();
+const { dbConnection } = require("./Backend/Database/config")
 
-
+dbConnection();
 
 const url = 'mongodb+srv://ProyectoMinticC4:12345@cluster0.p2upl.mongodb.net/'
 const client = new MongoClient(url);
