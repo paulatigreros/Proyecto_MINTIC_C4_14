@@ -38,18 +38,12 @@ const ProyectosSchema = Schema({
         require: true
     },
 
-    avances:{
-        avance:{
-            type:String,
-            require: true
-        },
+    avances:[{
+        avance: String,
+        observacion:String,
+    }
 
-        observacion:{
-            type:String,
-            require: true
-        }
-
-    },
+    ],
 
     integrante:{
         usuario:{

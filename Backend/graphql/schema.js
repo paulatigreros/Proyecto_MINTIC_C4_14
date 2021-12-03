@@ -1,5 +1,6 @@
 const graphql = require("graphql");
 const Proyectos = require("../Models/Proyectos");
+const Usuarios = require("../Models/Usuarios");
 const {
     GraphQLObjectType,
     GraphQLString,
@@ -9,6 +10,8 @@ const {
     GraphQLSchema,
     GraphQLID
   } = graphql;
+
+/* Schemas para emplear */  
 
   const ProyectoType = new GraphQLObjectType({
     name: "Proyecto",
@@ -20,11 +23,30 @@ const {
         estadoAprobacion: { type: GraphQLString },
         estadoActual: { type: GraphQLString },
         fase: { type: GraphQLString },
+        avance:{AvanceType},
        
                 
     }),
+})
 
+const UsuarioType = new GraphQLObjectType({
+    name: "Usuario",
+    fields: () => ({
+        nombre: { type: GraphQLString },
+        password: { type: GraphQLString },
+        correo: { type: GraphQLString },
+        estado: { type: GraphQLInt },
+        rol: { type: GraphQLString },
+        proyectos_asignados: { type: GraphQLString },            
+    }),
+})
 
+const AvanceType = new GraphQLObjectType({
+    name: "Avance",
+    fields: () => ({
+        avance: { type: GraphQLString },
+        observacion: { type: GraphQLString },           
+    }),
 })
 
 const IntegranteType = new GraphQLObjectType({
@@ -45,10 +67,12 @@ const IntegranteType = new GraphQLObjectType({
     })
 })
 
+/* Consulta del proyecto */
+
 const RootQuery = new GraphQLObjectType({
     name: "RootQuery",
     fields: {
-        proyecto: {
+        listarProyectos: {
             type: new GraphQLList(ProyectoType),
 
             resolve() {
@@ -60,6 +84,8 @@ const RootQuery = new GraphQLObjectType({
 
     }
 });
+
+/* Metodos para actualizar y crear datos */
 
 const Mutation = new GraphQLObjectType({
     name: "Mutation",
@@ -82,6 +108,7 @@ const Mutation = new GraphQLObjectType({
                 })
             },
         },
+        /* Agregar un nuevo Proyecto */
         agregarProyecto: {
             type: ProyectoType,
             args: {
@@ -107,6 +134,32 @@ const Mutation = new GraphQLObjectType({
               return await Proyecto.save();
             },
           },
+
+        agregarUsuario: {
+            type: UsuarioType,
+            args: {
+                nombre: { type: GraphQLString },
+                password: { type: GraphQLString },
+                correo: { type: GraphQLString },
+                estado: { type: GraphQLInt },
+                rol: { type: GraphQLString },
+                proyectos_asignados: { type: GraphQLString },  
+            },
+            async resolve(parent, args) {
+              console.log(args);
+              const Usuario = new Usuarios({
+                nombre: args.nombre,
+                password: args.password,
+                correo: args.correo,
+                estado: args.estado,
+                rol:args.rol,
+                proyectos_asignados:args.proyectos_asignadosestadoActual,
+              });
+              return await Usuario.save();
+            },
+          },
+
+
     
     
     }
