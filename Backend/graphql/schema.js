@@ -10,66 +10,112 @@ const {
     GraphQLID
   } = graphql;
 
-const ProyectoType = new GraphQLObjectType({
-    name:"Proyectos",
-        fields:() => ({
-            nombreProyecto:{ type: GraphQLString},
-            objetivosGenerales:{type: GraphQLString},
-            objetivosEspecificos:{type: GraphQLString},
-            presupuesto:{type: GraphQLInt},
-            estadoAprobacion:{type: GraphQLInt},
-            estadoActual:{type: GraphQLInt},
-            fase:{type: GraphQLInt},
-
-        })
+  const ProyectoType = new GraphQLObjectType({
+    name: "Proyecto",
+    fields: () => ({
+        nombreProyecto: { type: GraphQLString },
+        objetivosGenerales: { type: GraphQLString },
+        objetivosEspecificos: { type: GraphQLString },
+        presupuesto: { type: GraphQLInt },
+        estadoAprobacion: { type: GraphQLString },
+        estadoActual: { type: GraphQLString },
+        fase: { type: GraphQLString },
+       
+                
+    }),
 
 
 })
 
-const UsuarioType = new GraphQLObjectType({
-    name:"Usuarios",
-        fields:() => ({
-            nombre:{ type: GraphQLString},
-            contraseña:{type: GraphQLString},
-            correo:{type: GraphQLString},
-            estado:{type: GraphQLInt},
-            rol:{type: GraphQLInt},
-            proyectos_asignados:{
-                type:ProyectoType, 
-                resolve(parents,args){
-                    return Proyectos.findById(parents.profesor.Id)
-                }
-
+const IntegranteType = new GraphQLObjectType({
+    name: "Integrantes",
+    fields: () => ({
+        usuario: {
+            type: UsuarioType,
+            resolve(parents, args) {
+                return Usuarios.findById(parents.usuario.id)
             }
+        },
+        estado: { type: GraphQLString },
 
-        })
+        fechaIngreso: { type: GraphQLString },
 
+        fechaEgreso: { type: GraphQLString }
 
+    })
 })
 
 const RootQuery = new GraphQLObjectType({
     name: "RootQuery",
-    fields:{
-        proyecto:{
-            type: ProyectoType,
-            args: {
-            nombreProyecto:{
-                type:GraphQLString
-            } ,
+    fields: {
+        proyecto: {
+            type: new GraphQLList(ProyectoType),
 
+            resolve() {
+                return Proyectos.find()
+            },
         },
-        resolve(parents, args){
-            return Proyectos.find(args.id)
-        },
-    },
 
 
 
-}
+    }
 });
 
+const Mutation = new GraphQLObjectType({
+    name: "Mutation",
+    fields: {
+        generarSolicitud: {
+            type: ProyectoType,
+            args: {
+                    usuario: { type: GraphQLID },
+                    estado: { type: GraphQLString },
+                    fechaIngreso: { type: GraphQLString },
+                },
+        
+            async resolve(parent, args) {
+                return await Proyectos.findByIdAndUpdate(args.id, {
+                    usuario: args.usuarioId,
+                    estado: args.estado,
+                    fechaIngreso: args.fechaIngreso,
+                }, {
+                    new: true
+                })
+            },
+        },
+        agregarProyecto: {
+            type: ProyectoType,
+            args: {
+                nombreProyecto: { type: GraphQLString },
+                objetivosGenerales: { type: GraphQLString },
+                objetivosEspecificos: { type: GraphQLString },
+                presupuesto: { type: GraphQLInt },
+                estadoAprobacion: { type: GraphQLString },
+                estadoActual: { type: GraphQLString },
+                fase: { type: GraphQLString },
+            },
+            async resolve(parent, args) {
+              console.log(args);
+              const Proyecto = new Proyecto({
+                nombreProyecto: args.nombreProyecto,
+                objetivosGenerales: args.objetivosGenerales,
+                objetivosEspecificos: args.objetivosEspecificos,
+                presupuesto: args.presupuesto,
+                estadoAprobacion:args.estadoAprobacion,
+                estadoActual:args.estadoActual,
+                fase:args.fase
+              });
+              return await Proyectos.save();
+            },
+          },
+    
+    
+    }
+
+});
 
 module.exports = new GraphQLSchema({
     query: RootQuery,
-  });
+    mutation: Mutation,
+});
+
 
