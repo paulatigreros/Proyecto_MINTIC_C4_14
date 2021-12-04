@@ -1,17 +1,5 @@
-const graphql = require("graphql");
 const jwt = require("jsonwebtoken");
 const secret = "mi_llave"
-
-const {
-    GraphQLObjectType,
-    GraphQLString,
-    GraphQLInt,
-    GraphQLBoolean,
-    GraphQLList,
-    GraphQLSchema,
-    GraphQLID
-} = graphql;
-
 
 const generarJwt = (uid, nombre) => {
     return new Promise((resolve, reject) =>{
@@ -31,7 +19,5 @@ const generarJwt = (uid, nombre) => {
     })
 }
 
-module.exports = new GraphQLSchema({
-    generarJwt: generarJwt,
-});
+/* module.exports = {generarJwt}; */
 

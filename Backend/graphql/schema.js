@@ -1,10 +1,30 @@
 const bcrypt = require("bcrypt");
-const generarJwt = require("../helpers/jwt");
 const graphql = require("graphql");
 const Proyectos = require("../Models/Proyectos");
 const Usuarios = require("../Models/Usuarios");
 const Avances = require("../Models/Avances");
 const Solicitudes = require("../Models/Solicitudes")
+const jwt = require("jsonwebtoken");
+const secret = "mi_llave"
+
+const generarJwt = (uid, nombre) => {
+        return new Promise((resolve, reject) =>{
+            const payload = {
+                uid,
+                nombre
+            }
+            jwt.sign(payload, secret, {expiresIn: "2h"}, 
+                (err, token) => {
+                    if (err) {
+                        console.log (err)
+                        reject("No se pudo generar el Token")
+                    }
+                    resolve(token)
+                }
+            )
+        })
+    }
+
 
 const {
     GraphQLObjectType,
@@ -137,30 +157,39 @@ const RootQuery = new GraphQLObjectType({
             type: UsuarioType,
             args: {
                 password: { type: GraphQLString },
-                correo: { type: GraphQLString }
-            },
-            resolve (parents, {correo, password}) {
-                console.log(args); 
-                const usuario=  usuarios.find((correo) => usuarios.correo === correo);
-                
-                
-                /* Usuarios.find({
-                   correo
-                }) */
-                if (!usuario) {
-                    return "Usuario o contraseña incorrecto";
+                correo: { type: GraphQLString, 
                 }
-                /* const validarPassword = bcrypt.compareSync(password, usuario.password)
-                if (validarPassword) {
-                    const token = await generarJwt(usuario.id, usuario.nombre)
+            },
+            resolve (parents, {correo},{password}){
+                console.log(correo);
+                const usuario =  Usuarios.findOne({correo}) 
+                if(usuario.correo === correo){
+                    console.log("Usuario encontrado")
+                    return usuario}
+
+
+
+               /* const validarPassword =  bcrypt.compare(password,usuario.password,function(err, res){
+                if (validarPassword) {const token = generarJwt(usuario.id, usuario.nombre)
                     return token;
+                    console.log(token)
                 }
                 else {
                     return "Usuario o contraseña incorrecto";
-                } */
-            },
-        }
-    }
+                }
+                   });
+ */
+                   
+
+                   
+
+                
+            }, 
+            
+
+            
+        },
+    },
 
 });
 
