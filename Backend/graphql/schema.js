@@ -2,6 +2,7 @@ const graphql = require("graphql");
 const Proyectos = require("../Models/Proyectos");
 const Usuarios = require("../Models/Usuarios");
 const Avances= require("../Models/Avances");
+const Solicitudes= require("../Models/Solicitudes")  
 
 const {
     GraphQLObjectType,
@@ -17,13 +18,23 @@ const {
 const AvanceType = new GraphQLObjectType({
     name: "Avance",
     fields: () => ({
-        avance: { type: GraphQLString },
+        descripcion: { type: GraphQLString },
         observacion: { type: GraphQLString }, 
-        proyecto: {type: GraphQLID}          
+        proyectoId: {type: GraphQLID}          
     }),
 })
 
+const SolicitudType = new GraphQLObjectType({
+    name: "Solicitud",
+    fields: () => ({
+        usuarioId: { type: GraphQLID },
+        proyectoId: { type: GraphQLID }, 
+        fechaIngreso: {type: GraphQLString},
+        fechaEgreso: {type: GraphQLString},  
+        estadoSolicitud:{type: GraphQLBoolean}
 
+    }),
+})
 
 
   const ProyectoType = new GraphQLObjectType({
@@ -39,11 +50,15 @@ const AvanceType = new GraphQLObjectType({
         avance:{
         type : AvanceType,
             resolve(parents,args){
-                return Avances.findById(parent.proyectoId);
+                return Avance.findById(parent.proyectoId);
+            },
+        },
+        solicitud:{
+        type : SolicitudType,
+            resolve(parents,args){
+                return Solicitud.findById(parent.proyectoId);
             }
-    },
-       
-                
+    },       
     }),
 })
 
@@ -92,9 +107,21 @@ const RootQuery = new GraphQLObjectType({
             },
         },
 
-
+        listarAvances: {
+            type: AvanceType,
+            args: {
+                proyectoId: {type: GraphQLID}
+            },
+            resolve(parents, { proyectoId }) {
+              return Avances.find((proyectoId) => Avances.proyectoId === proyectoId);
+            },
+          },
 
     }
+
+
+
+
 });
 
 /* Metodos para actualizar y crear datos */
@@ -175,19 +202,41 @@ const Mutation = new GraphQLObjectType({
           crearAvance: {
             type: AvanceType,
             args: {
-                avance: { type: GraphQLString },
+                descripcion: { type: GraphQLString },
                 observacion: { type: GraphQLString }, 
-                proyecto: {type: GraphQLID}  
+                proyectoId: {type: GraphQLID}  
             },
             async resolve(parent, args) {
               console.log(args);
               const Avance = new Avances({
-                avance: args.avance,
+                descripcion: args.descripcion,
                 observacion: args.observacion,
-                proyecto: args.proyecto,
-
+                proyectoId: args.proyectoId,
               });
               return await Avance.save();
+            },
+          },
+
+
+          crearSolicitud: {
+            type: SolicitudType,
+            args: {
+                usuarioId: { type: GraphQLID },
+                proyectoId: { type: GraphQLID }, 
+                fechaIngreso: {type: GraphQLString},
+                fechaEgreso: {type: GraphQLString},  
+                estadoSolicitud:{type: GraphQLBoolean} 
+            },
+            async resolve(parent, args) {
+              console.log(args);
+              const Solicitud = new Solicitudes({
+                usuarioId: args.usuarioId,
+                proyectoId: args.proyectoId,
+                fechaIngreso: args.fechaIngreso,
+                fechaEgreso:args.fechaEgreso,
+                estadoSolicitud:args.estadoSolicitud
+              });
+              return await Solicitud.save();
             },
           },
 
