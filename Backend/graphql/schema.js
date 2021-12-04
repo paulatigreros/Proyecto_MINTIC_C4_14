@@ -1,6 +1,8 @@
 const graphql = require("graphql");
 const Proyectos = require("../Models/Proyectos");
 const Usuarios = require("../Models/Usuarios");
+const Avances= require("../Models/Avances");
+
 const {
     GraphQLObjectType,
     GraphQLString,
@@ -12,6 +14,17 @@ const {
   } = graphql;
 
 /* Schemas para emplear */  
+const AvanceType = new GraphQLObjectType({
+    name: "Avance",
+    fields: () => ({
+        avance: { type: GraphQLString },
+        observacion: { type: GraphQLString }, 
+        proyecto: {type: GraphQLID}          
+    }),
+})
+
+
+
 
   const ProyectoType = new GraphQLObjectType({
     name: "Proyecto",
@@ -23,7 +36,12 @@ const {
         estadoAprobacion: { type: GraphQLString },
         estadoActual: { type: GraphQLString },
         fase: { type: GraphQLString },
-        avance:{AvanceType},
+        avance:{
+        type : AvanceType,
+            resolve(parents,args){
+                return Avances.findById(parent.proyectoId);
+            }
+    },
        
                 
     }),
@@ -41,13 +59,7 @@ const UsuarioType = new GraphQLObjectType({
     }),
 })
 
-const AvanceType = new GraphQLObjectType({
-    name: "Avance",
-    fields: () => ({
-        avance: { type: GraphQLString },
-        observacion: { type: GraphQLString },           
-    }),
-})
+
 
 const IntegranteType = new GraphQLObjectType({
     name: "Integrantes",
@@ -134,7 +146,7 @@ const Mutation = new GraphQLObjectType({
               return await Proyecto.save();
             },
           },
-
+            /* Agregar un nuevo Usuario */
         agregarUsuario: {
             type: UsuarioType,
             args: {
@@ -159,6 +171,25 @@ const Mutation = new GraphQLObjectType({
             },
           },
 
+            /* Agregar un nuevo Usuario */
+          crearAvance: {
+            type: AvanceType,
+            args: {
+                avance: { type: GraphQLString },
+                observacion: { type: GraphQLString }, 
+                proyecto: {type: GraphQLID}  
+            },
+            async resolve(parent, args) {
+              console.log(args);
+              const Avance = new Avances({
+                avance: args.avance,
+                observacion: args.observacion,
+                proyecto: args.proyecto,
+
+              });
+              return await Avance.save();
+            },
+          },
 
     
     
