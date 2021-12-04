@@ -21,6 +21,11 @@ const SolicitudesSchema = Schema({
     fechaEgreso:{
         type:String,
         require:true
+    },
+
+    estado:{
+        type:String,
+        require:true
     }
     
 })

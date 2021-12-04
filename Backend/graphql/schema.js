@@ -3,27 +3,28 @@ const graphql = require("graphql");
 const Proyectos = require("../Models/Proyectos");
 const Usuarios = require("../Models/Usuarios");
 const Avances = require("../Models/Avances");
-const Solicitudes = require("../Models/Solicitudes")
+const Solicitud = require("../Models/Solicitudes")
 const jwt = require("jsonwebtoken");
+const { argsToArgsConfig } = require("graphql/type/definition");
 const secret = "mi_llave"
 
 const generarJwt = (uid, nombre) => {
-        return new Promise((resolve, reject) =>{
-            const payload = {
-                uid,
-                nombre
-            }
-            jwt.sign(payload, secret, {expiresIn: "2h"}, 
-                (err, token) => {
-                    if (err) {
-                        console.log (err)
-                        reject("No se pudo generar el Token")
-                    }
-                    resolve(token)
-                }
-            )
-        })
-    }
+    return new Promise((resolve, reject) => {
+        const payload = {
+            uid,
+            nombre
+        }
+        jwt.sign(payload, secret, { expiresIn: "2h" },
+            (err, token) => {
+                if (err) {
+                    console.log(err)
+                    reject("No se pudo generar el Token")
+                }
+                resolve(token)
+            }
+        )
+    })
+}
 
 
 const {
@@ -44,7 +45,7 @@ const UsuarioType = new GraphQLObjectType({
         nombre: { type: GraphQLString },
         password: { type: GraphQLString },
         correo: { type: GraphQLString },
-        estado: { type: GraphQLInt },
+        estado: { type: GraphQLString },
         rol: { type: GraphQLString },
         proyectos_asignados: { type: GraphQLString },
     }),
@@ -85,6 +86,8 @@ const ProyectoType = new GraphQLObjectType({
         estadoAprobacion: { type: GraphQLString },
         estadoActual: { type: GraphQLString },
         fase: { type: GraphQLString },
+        lider: {type: GraphQLID},
+
         avance: {
             type: AvanceType,
             resolve(parents, args) {
@@ -134,6 +137,16 @@ const RootQuery = new GraphQLObjectType({
             },
         },
 
+        listarProyectosLider: {
+            type: new GraphQLList(ProyectoType),
+            args:{
+                lider: {type: GraphQLID}
+            },
+            resolve(parentes, {lider}) {
+                return Proyectos.find({lider})
+            },
+        },
+
         listarAvances: {
             type: AvanceType,
             args: {
@@ -152,45 +165,69 @@ const RootQuery = new GraphQLObjectType({
             },
         },
 
+        listarEstudiantes: {
+            type: new GraphQLList(UsuarioType),
+
+            resolve() {
+                return Usuarios.find({rol:"Estudiante"})
+            },
+        },
+
+                
         /* Validar usuario  ---paula*/
         ValidarUsuario: {
             type: UsuarioType,
             args: {
                 password: { type: GraphQLString },
-                correo: { type: GraphQLString, 
-                }
+                correo: { type: GraphQLString}
             },
-            resolve (parents, {correo},{password}){
-                console.log(correo);
-                const usuario =  Usuarios.findOne({correo}) 
-                if(usuario.correo === correo){
-                    console.log("Usuario encontrado")
-                    return usuario}
 
+            async Login(parents, {args}) {
+            
+                const usuario = await Usuarios.findOne({
+                    correo
+                })
 
-
-               /* const validarPassword =  bcrypt.compare(password,usuario.password,function(err, res){
-                if (validarPassword) {const token = generarJwt(usuario.id, usuario.nombre)
+                if (!usuario){
+                    return "Usuario o contraseña incorrecta";
+                }
+                
+                const validarPassword = bcrypt.compareSync(password, usuario.password)
+                if (validarPassword){
+                    const token = await generarJwt(usuario.id, usuario.nombre)
                     return token;
-                    console.log(token)
                 }
                 else {
                     return "Usuario o contraseña incorrecto";
                 }
-                   });
- */
-                   
+            }
 
-                   
+        /*
+        resolve (parents, {correo},{password}){
+            console.log(correo);
+            const usuario =  Usuarios.findOne({correo}) 
+            if(usuario === correo){
+                console.log("Usuario encontrado")
+                return usuario
+            }
 
-                
-            }, 
-            
 
-            
+
+            const validarPassword =  bcrypt.compare(password,usuario.password,function(err, res){
+            if (validarPassword) {const token = generarJwt(usuario.id, usuario.nombre)
+                return token;
+                console.log(token)
+            }
+            else {
+                return "Usuario o contraseña incorrecto";
+            }
+               });
+            */ 
         },
-    },
 
+
+    
+    }
 });
 
 /* Metodos para actualizar y crear datos */
@@ -199,21 +236,24 @@ const Mutation = new GraphQLObjectType({
     name: "Mutation",
     fields: {
         generarSolicitud: {
-            type: ProyectoType,
+            type: SolicitudType,
+
             args: {
-                usuario: { type: GraphQLID },
-                estado: { type: GraphQLString },
+                proyectoId: {type: GraphQLID},
+                usuarioId: { type: GraphQLID },
+                estadoSolicitud: { type: GraphQLString },
                 fechaIngreso: { type: GraphQLString },
+                fechaEgreso: { type: GraphQLString },
             },
 
-            async resolve(parent, args) {
-                return await Proyectos.findByIdAndUpdate(args.id, {
-                    usuario: args.usuarioId,
-                    estado: args.estado,
-                    fechaIngreso: args.fechaIngreso,
-                }, {
-                    new: true
-                })
+            async resolve(parent, args) {               
+               const solicitud = new solicitud({ 
+                proyectoId: args.proyectoId,
+                usuarioId: args.usuario,
+                estadoSolicitud: args.estado,
+                fechaIngreso: args.fechaIngreso,
+                fechaEgreso: args.fechaEgreso,})
+                return await solicitud.save();
             },
         },
         /* Agregar un nuevo Proyecto */
@@ -227,6 +267,7 @@ const Mutation = new GraphQLObjectType({
                 estadoAprobacion: { type: GraphQLString },
                 estadoActual: { type: GraphQLString },
                 fase: { type: GraphQLString },
+                lider: {type: GraphQLID}
             },
             async resolve(parent, args) {
                 console.log(args);
@@ -237,9 +278,50 @@ const Mutation = new GraphQLObjectType({
                     presupuesto: args.presupuesto,
                     estadoAprobacion: args.estadoAprobacion,
                     estadoActual: args.estadoActual,
-                    fase: args.fase
+                    fase: args.fase,
+                    lider: args.lider
                 });
                 return await Proyecto.save();
+            },
+        },
+
+        ActualizarEstadosProyecto: {
+            type: ProyectoType,
+            args: {
+                proyectoId: {type: GraphQLID},
+                estadoAprobacion: { type: GraphQLString },
+                estadoActual: { type: GraphQLString },
+                fase: { type: GraphQLString },
+            },
+            async resolve(parent, args) {
+                return await Proyectos.findByIdAndUpdate(args.proyectoId, 
+                    {   estadoAprobacion: args.estadoAprobacion,
+                        estadoActual: args.estadoActual,
+                        fase: args.fase                   
+                    }, { 
+                        new: true
+                    });
+            },
+        },
+
+        ActualizarDatosProyectoLider: {
+            type: ProyectoType,
+            args: {
+                proyectoId: {type: GraphQLID},
+                nombreProyecto: { type: GraphQLString },
+                objetivosGenerales: { type: GraphQLString },
+                objetivosEspecificos: { type: GraphQLString },
+                presupuesto: { type: GraphQLInt },
+            },
+            async resolve(parent, args) {
+                return await Proyectos.findByIdAndUpdate(args.proyectoId, 
+                    {   nombreProyecto: args.nombreProyecto,
+                        objetivosGenerales: args.objetivosGenerales,
+                        objetivosEspecificos: args.objetivosEspecificos,
+                        presupuesto: args.presupuesto
+                    }, { 
+                        new: true
+                    });
             },
         },
 
@@ -263,33 +345,81 @@ const Mutation = new GraphQLObjectType({
             },
         },
 
-        /* Crear un nuevo Usuario --paula*/
+        /* Crear un nuevo Usuario & actualizar usuarios --paula*/
         AgregarUsuario: {
             type: UsuarioType,
             args: {
                 nombre: { type: GraphQLString },
                 password: { type: GraphQLString },
                 correo: { type: GraphQLString },
-                estado: { type: GraphQLInt },
+                estado: { type: GraphQLString },
                 rol: { type: GraphQLString },
-                proyectos_asignados: { type: GraphQLString },
             },
             async resolve(parent, args) {
                 const salt = bcrypt.genSaltSync();
-               /*  const password= bcrypt.hashSync(args.password, salt);  */
+                /*  const password= bcrypt.hashSync(args.password, salt);  */
                 const Usuario = new Usuarios({
                     nombre: args.nombre,
                     correo: args.correo,
-                    estado: args.estado,
-                    password: bcrypt.hashSync(args.password, salt), 
+                    estado: "Pendiente",
                     rol: args.rol,
-                    proyectos_asignados: args.proyectos_asignadosestadoActual,                
+                    password: bcrypt.hashSync(args.password, salt),
                 });
 
                 return await Usuario.save();
             }
         },
 
+        ActualizarUsuarioPersonales:{
+            type: UsuarioType,
+            args: {
+                id: {type: GraphQLID},
+                nombre: { type: GraphQLString },
+                password: { type: GraphQLString },
+                correo: { type: GraphQLString },
+            },
+            async resolve(parent, args) {
+                return await Usuarios.findByIdAndUpdate(args.id, 
+                {   nombre: args.nombre,
+                    correo: args.correo,
+                    estado: args.estado,                    
+                }, { 
+                    new: true
+                });
+            }
+        },
+    
+        ActualizarEstado:{
+            type: UsuarioType,
+            args: {
+                id: {type: GraphQLID},
+                estado: { type: GraphQLString },
+            },
+            async resolve(parent, args) {
+                return await Usuarios.findByIdAndUpdate(args.id, 
+                {   
+                    estado: args.estado               
+                }, { 
+                    new: true
+                });
+            }
+        },
+
+        ActualizarEstadoEstudiantes:{
+            type: UsuarioType,
+            args: {
+                id: {type: GraphQLID},
+                estado: { type: GraphQLString },
+            },
+            async resolve(parent, args) {
+                return await Usuarios.findByIdAndUpdate(args.id,
+                {   
+                    estado: args.estado               
+                }, { 
+                    new: true
+                });
+            }
+        },
 
         crearSolicitud: {
             type: SolicitudType,
@@ -302,12 +432,12 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args) {
                 console.log(args);
-                const Solicitud = new Solicitudes({
+                const Solicitud = new Solicitud({
                     usuarioId: args.usuarioId,
                     proyectoId: args.proyectoId,
                     fechaIngreso: args.fechaIngreso,
                     fechaEgreso: args.fechaEgreso,
-                    estadoSolicitud: args.estadoSolicitud
+                    estadoSolicitud: "Pendiente"
                 });
                 return await Solicitud.save();
             },

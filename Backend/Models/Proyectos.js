@@ -45,29 +45,12 @@ const ProyectosSchema = Schema({
 
     ],
 
-    integrante:{
-        usuario:{
-            type: Schema.Types.ObjectId,
-            ref: 'UsuariosModelo',
-            require: true
-        },
+    lider:{
+        type: Schema.Types.ObjectId,
+        require:true
+    },
 
-        estado:{
-            type:String,
-            require: true
-        },
-
-        fechaIngreso:{
-            type:Date,
-            require: true
-        },
-
-        fechaEgreso:{
-            type:Date,
-            require: true
-        }
-
-    }
+   
 
 })
 module.exports = model('ProyectosModelo', ProyectosSchema);
