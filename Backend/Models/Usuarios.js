@@ -9,7 +9,7 @@ const UsuariosSchema = Schema({
         require: true
     },
 
-    contraseña:{
+    password:{
         type: String,
         require: true
     },
