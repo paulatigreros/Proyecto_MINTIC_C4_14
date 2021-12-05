@@ -223,28 +223,7 @@ const RootQuery = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
     name: "Mutation",
     fields: {
-        crearSolicitud: {
-            type: SolicitudType,
-            args: {
-                usuarioId: { type: GraphQLID },
-                proyectoId: { type: GraphQLID },
-                fechaIngreso: { type: GraphQLString },
-                fechaEgreso: { type: GraphQLString },
-                estadoSolicitud: { type: GraphQLBoolean }
-            },
-            async resolve(parent, args) {
-                console.log(args);
-                const Solicitud = new Solicitudes({
-                    usuarioId: args.usuarioId,
-                    proyectoId: args.proyectoId,
-                    fechaIngreso: args.fechaIngreso,
-                    fechaEgreso: args.fechaEgreso,
-                    estadoSolicitud: args.estadoSolicitud
-                });
-                return await Solicitud.save();
-            },
-        },
-
+        
         /* Agregar un nuevo Proyecto */
         agregarProyecto: {
             type: ProyectoType,
