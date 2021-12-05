@@ -45,14 +45,14 @@ const ProyectosSchema = Schema({
 
     ],
 
-    solicitudId:{
+    solicitud:{
 
         type:String,
         require:true 
 
 },
     lider:{
-        type: Schema.Types.ObjectId,
+        type:String,
         require:true
     },
 

@@ -6,6 +6,7 @@ const Avances = require("../Models/Avances");
 const Solicitud = require("../Models/Solicitudes")
 const jwt = require("jsonwebtoken");
 const { argsToArgsConfig } = require("graphql/type/definition");
+const Solicitudes = require("../Models/Solicitudes");
 const secret = "mi_llave"
 
 const generarJwt = (uid, nombre) => {
@@ -89,16 +90,17 @@ const ProyectoType = new GraphQLObjectType({
         lider: {type: GraphQLID},
 
         avance: {
-            type: AvanceType,
+            type: new GraphQLList(AvanceType),
             resolve(parent, args) {
-                return Avances.findById(parent.proyectoId);
+                const ID = parent.id
+                return Avances.find({proyectoId:ID})   
             },
         },
-        solicitudId: {
+        solicitud: {
             type: new GraphQLList(SolicitudType),
             resolve(parent, args) {
-            /* return Solicitudes.filter((Solicitudes) => Solicitudes.proyectoId === parent.id); */
-            return Solicitud.find(parent.id)    
+            const id = parent.id
+            return Solicitud.find({proyectoId:id})    
 
       },
         },
@@ -183,6 +185,39 @@ const RootQuery = new GraphQLObjectType({
                 return Usuarios.find({rol:"Estudiante"})
             },
         },
+
+        listarSolicitudes:{
+            type: new GraphQLList(ProyectoType),
+            
+            args:{
+                lider:{type: GraphQLID},
+
+            },
+             async resolve(parents,{lider}) {
+                const solicitudes = await Proyectos.find({lider})
+                return solicitudes
+
+            }
+
+
+        },
+
+        listarProyectosLider:{
+            type: new GraphQLList(ProyectoType),
+            
+            args:{
+                lider:{type: GraphQLID},
+
+            },
+             async resolve(parents,{lider}) {
+                const proyectos = await Proyectos.find({lider})
+                return proyectos
+
+            }
+
+
+        },
+
 
                 
         /* Validar usuario  ---paula*/
@@ -296,19 +331,18 @@ const Mutation = new GraphQLObjectType({
         },
 
 
+
         /* Agregar un nuevo Usuario */
         crearAvance: {
             type: AvanceType,
             args: {
                 descripcion: { type: GraphQLString },
-                observacion: { type: GraphQLString },
                 proyectoId: { type: GraphQLID }
             },
             async resolve(parent, args) {
                 console.log(args);
                 const Avance = new Avances({
                     descripcion: args.descripcion,
-                    observacion: args.observacion,
                     proyectoId: args.proyectoId,
                 });
                 return await Avance.save();
@@ -413,7 +447,54 @@ const Mutation = new GraphQLObjectType({
             },
         },
 
+        ActualizarSolicitud:{
+            type: SolicitudType,
+            args: {
+            solicitudId:{type: GraphQLID},
+            estadoSolicitud:{type: GraphQLString},
+            },
+            async resolve(parent, args) {
+                return await Solicitudes.findByIdAndUpdate(args.solicitudId,
+                {   
+                    estadoSolicitud: args.estadoSolicitud           
+                }, { 
+                    new: true
+                });
+            }
+        },
 
+        ActualizarAvanceLider:{
+            type: AvanceType,
+            args: {
+            id:{type: GraphQLID},
+            observacion:{type: GraphQLString},
+            },
+            async resolve(parent, args) {
+                return await Avances.findByIdAndUpdate(args.id,
+                {   
+                    observacion: args.observacion          
+                }, { 
+                    new: true
+                });
+            }
+        },
+
+
+        ActualizarAvanceEstudiante:{
+            type: AvanceType,
+            args: {
+            id:{type: GraphQLID},
+            descripcion:{type: GraphQLString},
+            },
+            async resolve(parent, args) {
+                return await Avances.findByIdAndUpdate(args.id,
+                {   
+                    descripcion: args.descripcion          
+                }, { 
+                    new: true
+                });
+            }
+        },
 
     }
 
