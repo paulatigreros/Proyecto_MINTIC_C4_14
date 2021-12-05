@@ -3,7 +3,7 @@ const graphql = require("graphql");
 const Proyectos = require("../Models/Proyectos");
 const Usuarios = require("../Models/Usuarios");
 const Avances = require("../Models/Avances");
-const Solicitud = require("../Models/Solicitudes")
+const Solicitudes = require("../Models/Solicitudes")
 const jwt = require("jsonwebtoken");
 const { argsToArgsConfig } = require("graphql/type/definition");
 const secret = "mi_llave"
@@ -70,7 +70,7 @@ const SolicitudType = new GraphQLObjectType({
         proyectoId: { type: GraphQLID },
         fechaIngreso: { type: GraphQLString },
         fechaEgreso: { type: GraphQLString },
-        estadoSolicitud: { type: GraphQLBoolean }
+        estado: { type: GraphQLString }
 
     }),
 })
@@ -235,7 +235,30 @@ const RootQuery = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
     name: "Mutation",
     fields: {
-        generarSolicitud: {
+        crearSolicitud: {
+            type: SolicitudType,
+            args: {
+                usuarioId: { type: GraphQLID },
+                proyectoId: { type: GraphQLID },
+                fechaIngreso: { type: GraphQLString },
+                fechaEgreso: { type: GraphQLString },
+                estado: { type: GraphQLBoolean }
+            },
+            async resolve(parent, args) {
+                console.log(args);
+                const Solicitud = new Solicitudes({
+                    usuarioId: args.usuarioId,
+                    proyectoId: args.proyectoId,
+                    fechaIngreso: args.fechaIngreso,
+                    fechaEgreso: args.fechaEgreso,
+                    estado: args.estado
+                });
+                return await Solicitud.save();
+            },
+        },
+
+
+        /* generarSolicitud: {
             type: SolicitudType,
 
             args: {
@@ -255,7 +278,9 @@ const Mutation = new GraphQLObjectType({
                 fechaEgreso: args.fechaEgreso,})
                 return await solicitud.save();
             },
-        },
+        }, */
+
+
         /* Agregar un nuevo Proyecto */
         agregarProyecto: {
             type: ProyectoType,
