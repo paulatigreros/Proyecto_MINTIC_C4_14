@@ -23,11 +23,18 @@ const SolicitudesSchema = Schema({
         require:true
     },
 
+<<<<<<< HEAD
     estadoSolicitud: { 
         
         type: String,
         require:true
      }
+=======
+    estado:{
+        type:String,
+        require:true
+    }
+>>>>>>> Autenticación2
     
 })
 module.exports = model('Solicitud', SolicitudesSchema, 'Solicitudes');
