@@ -70,11 +70,7 @@ const SolicitudType = new GraphQLObjectType({
         proyectoId: { type: GraphQLID },
         fechaIngreso: { type: GraphQLString },
         fechaEgreso: { type: GraphQLString },
-<<<<<<< HEAD
         estadoSolicitud: { type: GraphQLString }
-=======
-        estado: { type: GraphQLString }
->>>>>>> Autenticación2
 
     }),
 })
@@ -169,7 +165,6 @@ const RootQuery = new GraphQLObjectType({
             },
         },
 
-<<<<<<< HEAD
         listarSolicitudes: {
             type: new GraphQLList(ProyectoType),
 
@@ -179,7 +174,6 @@ const RootQuery = new GraphQLObjectType({
         },
 
 
-=======
         listarEstudiantes: {
             type: new GraphQLList(UsuarioType),
 
@@ -189,7 +183,6 @@ const RootQuery = new GraphQLObjectType({
         },
 
                 
->>>>>>> Autenticación2
         /* Validar usuario  ---paula*/
         ValidarUsuario: {
             type: UsuarioType,
@@ -197,30 +190,8 @@ const RootQuery = new GraphQLObjectType({
                 password: { type: GraphQLString },
                 correo: { type: GraphQLString}
             },
-<<<<<<< HEAD
-            async resolve (parents, {correo,password}){
-                console.log(correo);
-                const usuario =  await Usuarios.findOne({correo}) 
-                if(usuario===null){
-                    console.log("Usuario no encontrado")
-                    }
-                
-                console.log({password})
-                    
-              const validarPassword =  bcrypt.compareSync(password,usuario.password)
-                if (validarPassword) { const token = generarJwt(usuario.id, usuario.nombre)
-                    console.log(token)
-                } 
 
-                else {
-                    return "Usuario o contraseña incorrecto";
-                } 
-                
-            }, 
-            
-=======
-
-            async Login(parents, {args}) {
+            async Login(parents, {correo,password}) {
             
                 const usuario = await Usuarios.findOne({
                     correo
@@ -240,28 +211,6 @@ const RootQuery = new GraphQLObjectType({
                 }
             }
 
-        /*
-        resolve (parents, {correo},{password}){
-            console.log(correo);
-            const usuario =  Usuarios.findOne({correo}) 
-            if(usuario === correo){
-                console.log("Usuario encontrado")
-                return usuario
-            }
-
->>>>>>> Autenticación2
-
-
-            const validarPassword =  bcrypt.compare(password,usuario.password,function(err, res){
-            if (validarPassword) {const token = generarJwt(usuario.id, usuario.nombre)
-                return token;
-                console.log(token)
-            }
-            else {
-                return "Usuario o contraseña incorrecto";
-            }
-               });
-            */ 
         },
 
 
@@ -281,7 +230,7 @@ const Mutation = new GraphQLObjectType({
                 proyectoId: { type: GraphQLID },
                 fechaIngreso: { type: GraphQLString },
                 fechaEgreso: { type: GraphQLString },
-                estado: { type: GraphQLBoolean }
+                estadoSolicitud: { type: GraphQLBoolean }
             },
             async resolve(parent, args) {
                 console.log(args);
@@ -290,35 +239,11 @@ const Mutation = new GraphQLObjectType({
                     proyectoId: args.proyectoId,
                     fechaIngreso: args.fechaIngreso,
                     fechaEgreso: args.fechaEgreso,
-                    estado: args.estado
+                    estadoSolicitud: args.estadoSolicitud
                 });
                 return await Solicitud.save();
             },
         },
-
-
-        /* generarSolicitud: {
-            type: SolicitudType,
-
-            args: {
-                proyectoId: {type: GraphQLID},
-                usuarioId: { type: GraphQLID },
-                estadoSolicitud: { type: GraphQLString },
-                fechaIngreso: { type: GraphQLString },
-                fechaEgreso: { type: GraphQLString },
-            },
-
-            async resolve(parent, args) {               
-               const solicitud = new solicitud({ 
-                proyectoId: args.proyectoId,
-                usuarioId: args.usuario,
-                estadoSolicitud: args.estado,
-                fechaIngreso: args.fechaIngreso,
-                fechaEgreso: args.fechaEgreso,})
-                return await solicitud.save();
-            },
-        }, */
-
 
         /* Agregar un nuevo Proyecto */
         agregarProyecto: {

@@ -45,21 +45,18 @@ const ProyectosSchema = Schema({
 
     ],
 
-<<<<<<< HEAD
     solicitudId:{
 
         type:String,
         require:true 
 
 },
-=======
     lider:{
         type: Schema.Types.ObjectId,
         require:true
     },
 
    
->>>>>>> Autenticación2
 
 })
 module.exports = model('ProyectosModelo', ProyectosSchema);
