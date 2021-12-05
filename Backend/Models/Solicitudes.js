@@ -30,4 +30,4 @@ const SolicitudesSchema = Schema({
      }
     
 })
-module.exports = model('Solicitud', SolicitudesSchema, 'Solicitudes');
+module.exports = model('Solicitud', SolicitudesSchema);

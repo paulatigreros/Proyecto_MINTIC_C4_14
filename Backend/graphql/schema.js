@@ -3,7 +3,7 @@ const graphql = require("graphql");
 const Proyectos = require("../Models/Proyectos");
 const Usuarios = require("../Models/Usuarios");
 const Avances = require("../Models/Avances");
-const Solicitudes = require("../Models/Solicitudes")
+const Solicitud = require("../Models/Solicitudes")
 const jwt = require("jsonwebtoken");
 const { argsToArgsConfig } = require("graphql/type/definition");
 const secret = "mi_llave"
@@ -97,7 +97,9 @@ const ProyectoType = new GraphQLObjectType({
         solicitudId: {
             type: new GraphQLList(SolicitudType),
             resolve(parent, args) {
-            return Solicitudes.filter((Solicitudes) => Solicitudes.proyectoId === parent.id);
+            /* return Solicitudes.filter((Solicitudes) => Solicitudes.proyectoId === parent.id); */
+            return Solicitud.find(parent.id)    
+
       },
         },
     }),
@@ -400,14 +402,14 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args) {
                 console.log(args);
-                const Solicitud = new Solicitud({
+                const solicitud = new Solicitud({
                     usuarioId: args.usuarioId,
                     proyectoId: args.proyectoId,
                     fechaIngreso: args.fechaIngreso,
                     fechaEgreso: args.fechaEgreso,
                     estadoSolicitud: "Pendiente"
                 });
-                return await Solicitud.save();
+                return await solicitud.save();
             },
         },
 
