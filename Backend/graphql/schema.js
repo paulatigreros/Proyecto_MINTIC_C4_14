@@ -224,22 +224,23 @@ const RootQuery = new GraphQLObjectType({
         ValidarUsuario: {
             type: UsuarioType,
             args: {
-                password: { type: GraphQLString },
-                correo: { type: GraphQLString}
+                correo: { type: GraphQLString},
+                password: { type: GraphQLString }
             },
 
-            async Login(parents, {correo,password}) {
-            
-                const usuario = await Usuarios.findOne({
-                    correo
-                })
+            async resolve (parents, {correo,password}) {
+                const usuario = await Usuarios.find({correo})
 
-                if (!usuario){
-                    return "Usuario o contraseña incorrecta";
+                if (usuario===''){
+                    console.log( "Usuario no encontrado")
                 }
+ 
+                console.log(usuario)
+            
+                const validarPassword = bcrypt.compareSync(password,usuario.password)
                 
-                const validarPassword = bcrypt.compareSync(password, usuario.password)
-                if (validarPassword){
+                console.log(validarPassword)
+                if (validarPassword===true){
                     const token = await generarJwt(usuario.id, usuario.nombre)
                     return token;
                 }
