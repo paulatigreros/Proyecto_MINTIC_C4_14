@@ -21,7 +21,13 @@ const SolicitudesSchema = Schema({
     fechaEgreso:{
         type:String,
         require:true
-    }
+    },
+
+    estadoSolicitud: { 
+        
+        type: String,
+        require:true
+     }
     
 })
-module.exports = model('SolicitudesModelo', SolicitudesSchema);
+module.exports = model('Solicitud', SolicitudesSchema, 'Solicitudes');

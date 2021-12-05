@@ -69,7 +69,7 @@ const SolicitudType = new GraphQLObjectType({
         proyectoId: { type: GraphQLID },
         fechaIngreso: { type: GraphQLString },
         fechaEgreso: { type: GraphQLString },
-        estadoSolicitud: { type: GraphQLBoolean }
+        estadoSolicitud: { type: GraphQLString }
 
     }),
 })
@@ -87,15 +87,15 @@ const ProyectoType = new GraphQLObjectType({
         fase: { type: GraphQLString },
         avance: {
             type: AvanceType,
-            resolve(parents, args) {
-                return Avance.findById(parent.proyectoId);
+            resolve(parent, args) {
+                return Avances.findById(parent.proyectoId);
             },
         },
-        solicitud: {
-            type: SolicitudType,
-            resolve(parents, args) {
-                return Solicitud.findById(parent.proyectoId);
-            }
+        solicitudId: {
+            type: new GraphQLList(SolicitudType),
+            resolve(parent, args) {
+            return Solicitudes.filter((Solicitudes) => Solicitudes.proyectoId === parent.id);
+      },
         },
     }),
 })
@@ -152,6 +152,15 @@ const RootQuery = new GraphQLObjectType({
             },
         },
 
+        listarSolicitudes: {
+            type: new GraphQLList(ProyectoType),
+
+            resolve() {
+                return Proyectos.find()
+            },
+        },
+
+
         /* Validar usuario  ---paula*/
         ValidarUsuario: {
             type: UsuarioType,
@@ -160,29 +169,23 @@ const RootQuery = new GraphQLObjectType({
                 correo: { type: GraphQLString, 
                 }
             },
-            resolve (parents, {correo},{password}){
+            async resolve (parents, {correo,password}){
                 console.log(correo);
-                const usuario =  Usuarios.findOne({correo}) 
-                if(usuario.correo === correo){
-                    console.log("Usuario encontrado")
-                    return usuario}
-
-
-
-               /* const validarPassword =  bcrypt.compare(password,usuario.password,function(err, res){
-                if (validarPassword) {const token = generarJwt(usuario.id, usuario.nombre)
-                    return token;
+                const usuario =  await Usuarios.findOne({correo}) 
+                if(usuario===null){
+                    console.log("Usuario no encontrado")
+                    }
+                
+                console.log({password})
+                    
+              const validarPassword =  bcrypt.compareSync(password,usuario.password)
+                if (validarPassword) { const token = generarJwt(usuario.id, usuario.nombre)
                     console.log(token)
-                }
+                } 
+
                 else {
                     return "Usuario o contraseña incorrecto";
-                }
-                   });
- */
-                   
-
-                   
-
+                } 
                 
             }, 
             
@@ -298,7 +301,7 @@ const Mutation = new GraphQLObjectType({
                 proyectoId: { type: GraphQLID },
                 fechaIngreso: { type: GraphQLString },
                 fechaEgreso: { type: GraphQLString },
-                estadoSolicitud: { type: GraphQLBoolean }
+                estadoSolicitud: { type: GraphQLString }
             },
             async resolve(parent, args) {
                 console.log(args);
@@ -307,7 +310,7 @@ const Mutation = new GraphQLObjectType({
                     proyectoId: args.proyectoId,
                     fechaIngreso: args.fechaIngreso,
                     fechaEgreso: args.fechaEgreso,
-                    estadoSolicitud: args.estadoSolicitud
+                    estadoSolicitud: "Pendiente"
                 });
                 return await Solicitud.save();
             },
