@@ -26,7 +26,35 @@ const generarJwt = (uid, nombre) => {
         )
     })
 }
+const validarJwt = (req,res,next) =>{
+    let token = "";
+    token  = req.headers["x-access-token"] || req.headers["authorization"];
+    console.log(token)
+    if(!token){
+        req.user = {auth : false}
+        return next();
 
+    }
+
+    if(token.startsWith("Bearer " )){
+        token = token.slice(7, token.length);
+        
+       
+    }
+
+    try {
+        const {uid, nombre} = jwt.verify(token, secret);
+        console.log(uid, nombre);
+        req.user = {auth : true};
+        return next();
+        
+    } catch (error) {
+        req.user = {auth : false}
+        return next();
+        
+    }
+
+}
 
 const {
     GraphQLObjectType,
@@ -235,14 +263,16 @@ const RootQuery = new GraphQLObjectType({
                     console.log( "Usuario no encontrado")
                 }
  
+
+                const userpass = usuario.password
                 console.log(usuario)
-            
-                const validarPassword = bcrypt.compareSync(password,usuario.password)
+                console.log(userpass)
+                const validarPassword = bcrypt.compareSync(password,"$2b$10$HFo0i.umh8wponps0g2TyOQAuNIFbNmCey43yXe6zP5kTsjlWf4ia")
                 
                 console.log(validarPassword)
-                if (validarPassword===true){
-                    const token = await generarJwt(usuario.id, usuario.nombre)
-                    return token;
+                if (validarPassword){
+                    const token = await generarJwt("61ad2750d2f6751ab5cf13cb", "Alejandro")
+                    console.log(token)
                 }
                 else {
                     return "Usuario o contraseña incorrecto";
