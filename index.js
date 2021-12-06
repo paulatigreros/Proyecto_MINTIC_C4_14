@@ -4,44 +4,37 @@ const schema = require("./Backend/graphql/schema");
 const express = require('express');
 const { graphqlHTTP } = require("express-graphql");
 const app = express();
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
+const secret = "mi_llave";
 
-const secret = "@mi_llave";
-
-const validarJwt = (req,res,next) =>{
-    let token = "";
-    token  = req.headers["x-access-token"] || req.headers["authorization"];
-    console.log(token)
-    if(token===""){
-        req.user = {auth : false}
-        next();
-
-    }
-
-    if(token.startsWith("Bearer " )){
-        token = token.slice(7, token.length);
-        
-       
-    }
-
-    try {
-        const {uid, nombre} = jwt.verify(token, secret);
-        console.log(uid, nombre);
-        req.user = {auth : true};
-        return next();
-        
-    } catch (error) {
-        req.user = {auth : false}
-        return next();
-        
-    }
-
-}
+const validarJwt = (req, res, next) => {
+  let token = "";
+  token = req.headers["x-access-token"] || req.headers["authorization"];
+  if (!token) {
+    req.user = { auth: false };
+    return next();
+  }
+  if (token.startsWith("Bearer ")) {
+    token = token.slice(7, token.length);
+  }
+  try {
+    const { uid, nombre } = jwt.verify(token, secret);
+    console.log("El token es: ", token);
+    console.log(uid, nombre);
+    req.user = { auth: true };
+    return next();
+  } catch (error) {
+    req.user = { auth: false };
+    return next();
+  }
+};
 
 
 
 app.use(validarJwt);
+
+
 
 const dbConnection = async () =>{
     try {

@@ -3,58 +3,30 @@ const graphql = require("graphql");
 const Proyectos = require("../Models/Proyectos");
 const Usuarios = require("../Models/Usuarios");
 const Avances = require("../Models/Avances");
-const Solicitud = require("../Models/Solicitudes")
-const jwt = require("jsonwebtoken");
+const Solicitud = require("../Models/Solicitudes");
 const { argsToArgsConfig } = require("graphql/type/definition");
 const Solicitudes = require("../Models/Solicitudes");
+const jwt=  require ("jsonwebtoken");
 const secret = "mi_llave"
 
-const generarJwt = (uid, nombre) => {
+const generarJwt = (uid, name) => {
     return new Promise((resolve, reject) => {
         const payload = {
             uid,
-            nombre
+            name
         }
-        jwt.sign(payload, secret, { expiresIn: "2h" },
+        jwt.sign(payload, secret, {expiresIn: "2h"},
             (err, token) => {
-                if (err) {
-                    console.log(err)
-                    reject("No se pudo generar el Token")
+                if(err){
+                    console.log(err),
+                    reject("No se pudo generar el token")
                 }
                 resolve(token)
-            }
-        )
+            })        
     })
 }
-const validarJwt = (req,res,next) =>{
-    let token = "";
-    token  = req.headers["x-access-token"] || req.headers["authorization"];
-    console.log(token)
-    if(!token){
-        req.user = {auth : false}
-        return next();
 
-    }
 
-    if(token.startsWith("Bearer " )){
-        token = token.slice(7, token.length);
-        
-       
-    }
-
-    try {
-        const {uid, nombre} = jwt.verify(token, secret);
-        console.log(uid, nombre);
-        req.user = {auth : true};
-        return next();
-        
-    } catch (error) {
-        req.user = {auth : false}
-        return next();
-        
-    }
-
-}
 
 const {
     GraphQLObjectType,
@@ -257,22 +229,20 @@ const RootQuery = new GraphQLObjectType({
             },
 
             async resolve (parents, {correo,password}) {
-                const usuario = await Usuarios.find({correo})
+                const Usuario = await Usuarios.findOne({correo},{"password":1,"nombre":1},
+                )
 
-                if (usuario===''){
+                if (Usuarios===''){
                     console.log( "Usuario no encontrado")
                 }
- 
 
-                const userpass = usuario.password
-                console.log(usuario)
-                console.log(userpass)
-                const validarPassword = bcrypt.compareSync(password,"$2b$10$HFo0i.umh8wponps0g2TyOQAuNIFbNmCey43yXe6zP5kTsjlWf4ia")
+                console.log(Usuario.nombre)
+
+                const validarPassword = bcrypt.compareSync(password,Usuario.password)
                 
-                console.log(validarPassword)
                 if (validarPassword){
-                    const token = await generarJwt("61ad2750d2f6751ab5cf13cb", "Alejandro")
-                    console.log(token)
+                    const token = await generarJwt(Usuario.id,Usuario.nombre)
+                    console.log(token) 
                 }
                 else {
                     return "Usuario o contraseña incorrecto";
