@@ -5,6 +5,10 @@ const express = require('express');
 const { graphqlHTTP } = require("express-graphql");
 const app = express();
 const jwt = require("jsonwebtoken");
+const dotenv= require("dotenv");
+
+dotenv.config();
+
 
 const secret = "mi_llave";
 
@@ -15,9 +19,11 @@ const validarJwt = (req, res, next) => {
     req.user = { auth: false };
     return next();
   }
+
   if (token.startsWith("Bearer ")) {
     token = token.slice(7, token.length);
   }
+
   try {
     const { uid, nombre } = jwt.verify(token, secret);
     console.log("El token es: ", token);
@@ -54,11 +60,14 @@ app.listen(process.env.PORT || 4000, () => {
     console.log(`servidor corriendo en el puerto ${process.env.Port || 4000}`);
 })
 
-app.use("/graphql", graphqlHTTP({
-    graphiql: true,
-    schema: schema
 
-}))
+app.use("/graphql", graphqlHTTP((req) => ({
+    graphiql : true,
+    schema : schema,
+    context : {
+        user : req.user
+    }
+})));
 
 app.get("/" , (req,res)=>{
     res.json({

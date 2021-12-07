@@ -6,7 +6,7 @@ const Avances = require("../Models/Avances");
 const Solicitud = require("../Models/Solicitudes");
 const { argsToArgsConfig } = require("graphql/type/definition");
 const Solicitudes = require("../Models/Solicitudes");
-const jwt=  require ("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const secret = "mi_llave"
 
 const generarJwt = (uid, name) => {
@@ -15,17 +15,16 @@ const generarJwt = (uid, name) => {
             uid,
             name
         }
-        jwt.sign(payload, secret, {expiresIn: "2h"},
+        jwt.sign(payload, secret, { expiresIn: "2h" },
             (err, token) => {
-                if(err){
+                if (err) {
                     console.log(err),
-                    reject("No se pudo generar el token")
+                        reject("No se pudo generar el token")
                 }
                 resolve(token)
-            })        
+            })
     })
 }
-
 
 
 const {
@@ -87,22 +86,22 @@ const ProyectoType = new GraphQLObjectType({
         estadoAprobacion: { type: GraphQLString },
         estadoActual: { type: GraphQLString },
         fase: { type: GraphQLString },
-        lider: {type: GraphQLID},
+        lider: { type: GraphQLID },
 
         avance: {
             type: new GraphQLList(AvanceType),
             resolve(parent, args) {
                 const ID = parent.id
-                return Avances.find({proyectoId:ID})   
+                return Avances.find({ proyectoId: ID })
             },
         },
         solicitud: {
             type: new GraphQLList(SolicitudType),
             resolve(parent, args) {
-            const id = parent.id
-            return Solicitud.find({proyectoId:id})    
+                const id = parent.id
+                return Solicitud.find({ proyectoId: id })
 
-      },
+            },
         },
     }),
 })
@@ -136,123 +135,143 @@ const RootQuery = new GraphQLObjectType({
         listarProyectos: {
             type: new GraphQLList(ProyectoType),
 
-            resolve() {
-                return Proyectos.find()
-            },
-        },
 
-        listarProyectosLider: {
-            type: new GraphQLList(ProyectoType),
-            args:{
-                lider: {type: GraphQLID}
-            },
-            resolve(parentes, {lider}) {
-                return Proyectos.find({lider})
-            },
+            resolve(_, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return Proyectos.find()
+                }
+                else {
+                    return null
+                }
+            }
+
         },
 
         listarAvances: {
-            type: AvanceType,
+            type: new GraphQLList(AvanceType),
             args: {
                 proyectoId: { type: GraphQLID }
             },
-            resolve(parents, { proyectoId }) {
-                return Avances.find((proyectoId) => Avances.proyectoId === proyectoId);
-            },
+            resolve(_, { proyectoId }, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return Avances.find({ proyectoId });
+                }
+                else {
+                    return null
+                }
+            }
         },
+
 
         listarUsuarios: {
             type: new GraphQLList(UsuarioType),
 
-            resolve() {
-                return Usuarios.find()
-            },
-        },
-
-        listarSolicitudes: {
-            type: new GraphQLList(ProyectoType),
-
-            resolve() {
-                return Proyectos.find()
-            },
+            resolve(_, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return Usuarios.find()
+                }
+                else {
+                    return null
+                }
+            }
         },
 
 
         listarEstudiantes: {
             type: new GraphQLList(UsuarioType),
 
-            resolve() {
-                return Usuarios.find({rol:"Estudiante"})
-            },
-        },
-
-        listarSolicitudes:{
-            type: new GraphQLList(ProyectoType),
-            
-            args:{
-                lider:{type: GraphQLID},
-
-            },
-             async resolve(parents,{lider}) {
-                const solicitudes = await Proyectos.find({lider})
-                return solicitudes
-
+            resolve(_, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return Usuarios.find({ rol: "Estudiante" })
+                }
+                else {
+                    return null
+                }
             }
-
-
         },
 
-        listarProyectosLider:{
+        listarSolicitudes: {
             type: new GraphQLList(ProyectoType),
-            
-            args:{
-                lider:{type: GraphQLID},
+            args: { lider: { type: GraphQLID } },
+
+            resolve(_, { lider }, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return Proyectos.find({ lider }, { "solicitudes": 1 })
+                }
+                else {
+                    return null
+                }
+            }
+        },
+
+
+        listarProyectosLider: {
+            type: new GraphQLList(ProyectoType),
+
+            args: {
+                lider: { type: GraphQLID },
 
             },
-             async resolve(parents,{lider}) {
-                const proyectos = await Proyectos.find({lider})
-                return proyectos
-
+            async resolve(_, { lider }, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    const proyectos = await Proyectos.find({ lider })
+                    return proyectos
+                }
+                else {
+                    return null
+                }
             }
-
-
         },
 
 
-                
-        /* Validar usuario  ---paula*/
+
+        /* Validar usuario  */
         ValidarUsuario: {
             type: UsuarioType,
             args: {
-                correo: { type: GraphQLString},
+                correo: { type: GraphQLString },
                 password: { type: GraphQLString }
             },
 
-            async resolve (parents, {correo,password}) {
-                const Usuario = await Usuarios.findOne({correo},{"password":1,"nombre":1},
-                )
+            async resolve(parents, { correo, password }) {
+                const Usuario = await Usuarios.findOne({ correo }, { "password": 1, "nombre": 1, "estado": 1 })
 
-                if (Usuarios===''){
-                    console.log( "Usuario no encontrado")
+
+
+                if (Usuarios === '') {
+                    console.log("Usuario no encontrado")
                 }
 
-                console.log(Usuario.nombre)
-
-                const validarPassword = bcrypt.compareSync(password,Usuario.password)
-                
-                if (validarPassword){
-                    const token = await generarJwt(Usuario.id,Usuario.nombre)
-                    console.log(token) 
+                if (Usuario.estado === "Pendiente") {
+                    console.log("El usuario no ha sido autorizado por el administrador")
                 }
+
+                const validarPassword = bcrypt.compareSync(password, Usuario.password)
+
+                if (validarPassword && Usuario.estado === "Autorizado") {
+                    const token = await generarJwt(Usuario.id, Usuario.nombre)
+                    console.log(token);x
+
+                }
+
                 else {
                     return "Usuario o contraseña incorrecto";
                 }
+
+
+
             }
 
         },
 
 
-    
+
     }
 });
 
@@ -261,7 +280,7 @@ const RootQuery = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
     name: "Mutation",
     fields: {
-        
+
         /* Agregar un nuevo Proyecto */
         agregarProyecto: {
             type: ProyectoType,
@@ -273,61 +292,70 @@ const Mutation = new GraphQLObjectType({
                 estadoAprobacion: { type: GraphQLString },
                 estadoActual: { type: GraphQLString },
                 fase: { type: GraphQLString },
-                lider: {type: GraphQLID}
+                lider: { type: GraphQLID }
             },
-            async resolve(parent, args) {
-                console.log(args);
-                const Proyecto = new Proyectos({
-                    nombreProyecto: args.nombreProyecto,
-                    objetivosGenerales: args.objetivosGenerales,
-                    objetivosEspecificos: args.objetivosEspecificos,
-                    presupuesto: args.presupuesto,
-                    estadoAprobacion: args.estadoAprobacion,
-                    estadoActual: args.estadoActual,
-                    fase: args.fase,
-                    lider: args.lider
-                });
-                return await Proyecto.save();
+            async resolve(_, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    console.log(args);
+                    const Proyecto = new Proyectos({
+                        nombreProyecto: args.nombreProyecto,
+                        objetivosGenerales: args.objetivosGenerales,
+                        objetivosEspecificos: args.objetivosEspecificos,
+                        presupuesto: args.presupuesto,
+                        estadoAprobacion: args.estadoAprobacion,
+                        estadoActual: args.estadoActual,
+                        fase: args.fase,
+                        lider: args.lider
+                    });
+                    return await Proyecto.save();
+                }
+                else {
+                    return null
+                }
+
             },
         },
 
         ActualizarEstadosProyecto: {
             type: ProyectoType,
             args: {
-                proyectoId: {type: GraphQLID},
+                proyectoId: { type: GraphQLID },
                 estadoAprobacion: { type: GraphQLString },
                 estadoActual: { type: GraphQLString },
                 fase: { type: GraphQLString },
             },
             async resolve(parent, args) {
-                return await Proyectos.findByIdAndUpdate(args.proyectoId, 
-                    {   estadoAprobacion: args.estadoAprobacion,
+                return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                    {
+                        estadoAprobacion: args.estadoAprobacion,
                         estadoActual: args.estadoActual,
-                        fase: args.fase                   
-                    }, { 
-                        new: true
-                    });
+                        fase: args.fase
+                    }, {
+                    new: true
+                });
             },
         },
 
         ActualizarDatosProyectoLider: {
             type: ProyectoType,
             args: {
-                proyectoId: {type: GraphQLID},
+                proyectoId: { type: GraphQLID },
                 nombreProyecto: { type: GraphQLString },
                 objetivosGenerales: { type: GraphQLString },
                 objetivosEspecificos: { type: GraphQLString },
                 presupuesto: { type: GraphQLInt },
             },
             async resolve(parent, args) {
-                return await Proyectos.findByIdAndUpdate(args.proyectoId, 
-                    {   nombreProyecto: args.nombreProyecto,
+                return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                    {
+                        nombreProyecto: args.nombreProyecto,
                         objetivosGenerales: args.objetivosGenerales,
                         objetivosEspecificos: args.objetivosEspecificos,
                         presupuesto: args.presupuesto
-                    }, { 
-                        new: true
-                    });
+                    }, {
+                    new: true
+                });
             },
         },
 
@@ -375,52 +403,53 @@ const Mutation = new GraphQLObjectType({
             }
         },
 
-        ActualizarUsuarioPersonales:{
+        ActualizarUsuarioPersonales: {
             type: UsuarioType,
             args: {
-                id: {type: GraphQLID},
+                id: { type: GraphQLID },
                 nombre: { type: GraphQLString },
                 password: { type: GraphQLString },
                 correo: { type: GraphQLString },
             },
             async resolve(parent, args) {
-                return await Usuarios.findByIdAndUpdate(args.id, 
-                {   nombre: args.nombre,
-                    correo: args.correo,
-                    estado: args.estado,                    
-                }, { 
-                    new: true
-                });
-            }
-        },
-    
-        ActualizarEstado:{
-            type: UsuarioType,
-            args: {
-                id: {type: GraphQLID},
-                estado: { type: GraphQLString },
-            },
-            async resolve(parent, args) {
-                return await Usuarios.findByIdAndUpdate(args.id, 
-                {   
-                    estado: args.estado               
-                }, { 
+                return await Usuarios.findByIdAndUpdate(args.id,
+                    {
+                        nombre: args.nombre,
+                        correo: args.correo,
+                        estado: args.estado,
+                    }, {
                     new: true
                 });
             }
         },
 
-        ActualizarEstadoEstudiantes:{
+        ActualizarEstado: {
             type: UsuarioType,
             args: {
-                id: {type: GraphQLID},
+                id: { type: GraphQLID },
                 estado: { type: GraphQLString },
             },
             async resolve(parent, args) {
                 return await Usuarios.findByIdAndUpdate(args.id,
-                {   
-                    estado: args.estado               
-                }, { 
+                    {
+                        estado: args.estado
+                    }, {
+                    new: true
+                });
+            }
+        },
+
+        ActualizarEstadoEstudiantes: {
+            type: UsuarioType,
+            args: {
+                id: { type: GraphQLID },
+                estado: { type: GraphQLString },
+            },
+            async resolve(parent, args) {
+                return await Usuarios.findByIdAndUpdate(args.id,
+                    {
+                        estado: args.estado
+                    }, {
                     new: true
                 });
             }
@@ -448,50 +477,50 @@ const Mutation = new GraphQLObjectType({
             },
         },
 
-        ActualizarSolicitud:{
+        ActualizarSolicitud: {
             type: SolicitudType,
             args: {
-            solicitudId:{type: GraphQLID},
-            estadoSolicitud:{type: GraphQLString},
+                solicitudId: { type: GraphQLID },
+                estadoSolicitud: { type: GraphQLString },
             },
             async resolve(parent, args) {
                 return await Solicitudes.findByIdAndUpdate(args.solicitudId,
-                {   
-                    estadoSolicitud: args.estadoSolicitud           
-                }, { 
+                    {
+                        estadoSolicitud: args.estadoSolicitud
+                    }, {
                     new: true
                 });
             }
         },
 
-        ActualizarAvanceLider:{
+        ActualizarAvanceLider: {
             type: AvanceType,
             args: {
-            id:{type: GraphQLID},
-            observacion:{type: GraphQLString},
+                id: { type: GraphQLID },
+                observacion: { type: GraphQLString },
             },
             async resolve(parent, args) {
                 return await Avances.findByIdAndUpdate(args.id,
-                {   
-                    observacion: args.observacion          
-                }, { 
+                    {
+                        observacion: args.observacion
+                    }, {
                     new: true
                 });
             }
         },
 
 
-        ActualizarAvanceEstudiante:{
+        ActualizarAvanceEstudiante: {
             type: AvanceType,
             args: {
-            id:{type: GraphQLID},
-            descripcion:{type: GraphQLString},
+                id: { type: GraphQLID },
+                descripcion: { type: GraphQLString },
             },
             async resolve(parent, args) {
                 return await Avances.findByIdAndUpdate(args.id,
-                {   
-                    descripcion: args.descripcion          
-                }, { 
+                    {
+                        descripcion: args.descripcion
+                    }, {
                     new: true
                 });
             }
