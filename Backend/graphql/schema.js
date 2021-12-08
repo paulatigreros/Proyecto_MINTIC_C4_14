@@ -256,7 +256,7 @@ const RootQuery = new GraphQLObjectType({
 
                 if (validarPassword && Usuario.estado === "Autorizado") {
                     const token = await generarJwt(Usuario.id, Usuario.nombre)
-                    console.log(token);x
+                    console.log(token);
 
                 }
 
@@ -325,15 +325,21 @@ const Mutation = new GraphQLObjectType({
                 estadoActual: { type: GraphQLString },
                 fase: { type: GraphQLString },
             },
-            async resolve(parent, args) {
-                return await Proyectos.findByIdAndUpdate(args.proyectoId,
-                    {
-                        estadoAprobacion: args.estadoAprobacion,
-                        estadoActual: args.estadoActual,
-                        fase: args.fase
-                    }, {
-                    new: true
-                });
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                        {
+                            estadoAprobacion: args.estadoAprobacion,
+                            estadoActual: args.estadoActual,
+                            fase: args.fase
+                        }, {
+                        new: true
+                    });
+                }
+                else {
+                    return null
+                }
             },
         },
 
@@ -346,16 +352,22 @@ const Mutation = new GraphQLObjectType({
                 objetivosEspecificos: { type: GraphQLString },
                 presupuesto: { type: GraphQLInt },
             },
-            async resolve(parent, args) {
-                return await Proyectos.findByIdAndUpdate(args.proyectoId,
-                    {
-                        nombreProyecto: args.nombreProyecto,
-                        objetivosGenerales: args.objetivosGenerales,
-                        objetivosEspecificos: args.objetivosEspecificos,
-                        presupuesto: args.presupuesto
-                    }, {
-                    new: true
-                });
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                        {
+                            nombreProyecto: args.nombreProyecto,
+                            objetivosGenerales: args.objetivosGenerales,
+                            objetivosEspecificos: args.objetivosEspecificos,
+                            presupuesto: args.presupuesto
+                        }, {
+                        new: true
+                    });
+                }
+                else {
+                    return null
+                }
             },
         },
 
@@ -365,17 +377,24 @@ const Mutation = new GraphQLObjectType({
         crearAvance: {
             type: AvanceType,
             args: {
-                descripcion: { type: GraphQLString },
-                proyectoId: { type: GraphQLID }
+                proyectoId: { type: GraphQLID },
+                descripcion: { type: GraphQLString }
+            },    
+            async resolve(_, args, context) {
+                console.log(context);
+                if (context.user.auth) { 
+                    console.log(args);
+                    const Avance = new Avances({
+                        proyectoId: args.proyectoId,
+                        descripcion: args.descripcion
+                    });
+                    return await Avance.save();
+                }
+                else {
+                    return null
+                } 
             },
-            async resolve(parent, args) {
-                console.log(args);
-                const Avance = new Avances({
-                    descripcion: args.descripcion,
-                    proyectoId: args.proyectoId,
-                });
-                return await Avance.save();
-            },
+
         },
 
         /* Crear un nuevo Usuario & actualizar usuarios --paula*/
@@ -388,18 +407,24 @@ const Mutation = new GraphQLObjectType({
                 estado: { type: GraphQLString },
                 rol: { type: GraphQLString },
             },
-            async resolve(parent, args) {
-                const salt = bcrypt.genSaltSync();
-                /*  const password= bcrypt.hashSync(args.password, salt);  */
-                const Usuario = new Usuarios({
-                    nombre: args.nombre,
-                    correo: args.correo,
-                    estado: "Pendiente",
-                    rol: args.rol,
-                    password: bcrypt.hashSync(args.password, salt),
-                });
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    const salt = bcrypt.genSaltSync();
+                    /*  const password= bcrypt.hashSync(args.password, salt);  */
+                    const Usuario = new Usuarios({
+                        nombre: args.nombre,
+                        correo: args.correo,
+                        estado: "Pendiente",
+                        rol: args.rol,
+                        password: bcrypt.hashSync(args.password, salt),
+                    });
 
-                return await Usuario.save();
+                    return await Usuario.save();
+                }
+                else {
+                    return null
+                }
             }
         },
 
@@ -411,15 +436,21 @@ const Mutation = new GraphQLObjectType({
                 password: { type: GraphQLString },
                 correo: { type: GraphQLString },
             },
-            async resolve(parent, args) {
-                return await Usuarios.findByIdAndUpdate(args.id,
-                    {
-                        nombre: args.nombre,
-                        correo: args.correo,
-                        estado: args.estado,
-                    }, {
-                    new: true
-                });
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return await Usuarios.findByIdAndUpdate(args.id,
+                        {
+                            nombre: args.nombre,
+                            correo: args.correo,
+                            estado: args.estado,
+                        }, {
+                        new: true
+                    });
+                }
+                else {
+                    return null
+                }
             }
         },
 
@@ -429,13 +460,19 @@ const Mutation = new GraphQLObjectType({
                 id: { type: GraphQLID },
                 estado: { type: GraphQLString },
             },
-            async resolve(parent, args) {
-                return await Usuarios.findByIdAndUpdate(args.id,
-                    {
-                        estado: args.estado
-                    }, {
-                    new: true
-                });
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return await Usuarios.findByIdAndUpdate(args.id,
+                        {
+                            estado: args.estado
+                        }, {
+                        new: true
+                    });
+                }
+                else {
+                    return null
+                }
             }
         },
 
@@ -446,12 +483,18 @@ const Mutation = new GraphQLObjectType({
                 estado: { type: GraphQLString },
             },
             async resolve(parent, args) {
-                return await Usuarios.findByIdAndUpdate(args.id,
-                    {
-                        estado: args.estado
-                    }, {
-                    new: true
-                });
+                console.log(context);
+                if (context.user.auth) {
+                    return await Usuarios.findByIdAndUpdate(args.id,
+                        {
+                            estado: args.estado
+                        }, {
+                        new: true
+                    });
+                }
+                else {
+                    return null
+                }
             }
         },
 
@@ -464,16 +507,22 @@ const Mutation = new GraphQLObjectType({
                 fechaEgreso: { type: GraphQLString },
                 estadoSolicitud: { type: GraphQLString }
             },
-            async resolve(parent, args) {
-                console.log(args);
-                const solicitud = new Solicitud({
-                    usuarioId: args.usuarioId,
-                    proyectoId: args.proyectoId,
-                    fechaIngreso: args.fechaIngreso,
-                    fechaEgreso: args.fechaEgreso,
-                    estadoSolicitud: "Pendiente"
-                });
-                return await solicitud.save();
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    console.log(args);
+                    const solicitud = new Solicitud({
+                        usuarioId: args.usuarioId,
+                        proyectoId: args.proyectoId,
+                        fechaIngreso: args.fechaIngreso,
+                        fechaEgreso: args.fechaEgreso,
+                        estadoSolicitud: "Pendiente"
+                    });
+                    return await solicitud.save();
+                }
+                else {
+                    return null
+                }
             },
         },
 
@@ -483,13 +532,19 @@ const Mutation = new GraphQLObjectType({
                 solicitudId: { type: GraphQLID },
                 estadoSolicitud: { type: GraphQLString },
             },
-            async resolve(parent, args) {
-                return await Solicitudes.findByIdAndUpdate(args.solicitudId,
-                    {
-                        estadoSolicitud: args.estadoSolicitud
-                    }, {
-                    new: true
-                });
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return await Solicitudes.findByIdAndUpdate(args.solicitudId,
+                        {
+                            estadoSolicitud: args.estadoSolicitud
+                        }, {
+                        new: true
+                    });
+                }
+                else {
+                    return null
+                }
             }
         },
 
@@ -499,13 +554,19 @@ const Mutation = new GraphQLObjectType({
                 id: { type: GraphQLID },
                 observacion: { type: GraphQLString },
             },
-            async resolve(parent, args) {
-                return await Avances.findByIdAndUpdate(args.id,
-                    {
-                        observacion: args.observacion
-                    }, {
-                    new: true
-                });
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.user.auth) {
+                    return await Avances.findByIdAndUpdate(args.id,
+                        {
+                            observacion: args.observacion
+                        }, {
+                        new: true
+                    });
+                }
+                else {
+                    return null
+                }
             }
         },
 
@@ -516,13 +577,19 @@ const Mutation = new GraphQLObjectType({
                 id: { type: GraphQLID },
                 descripcion: { type: GraphQLString },
             },
-            async resolve(parent, args) {
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.user.auth) {
                 return await Avances.findByIdAndUpdate(args.id,
                     {
                         descripcion: args.descripcion
                     }, {
                     new: true
                 });
+            }
+            else {
+                return null
+            }
             }
         },
 
