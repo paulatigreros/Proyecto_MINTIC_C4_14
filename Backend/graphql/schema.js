@@ -355,6 +355,12 @@ const Mutation = new GraphQLObjectType({
             async resolve(parent, args, context) {
                 console.log(context);
                 if (context.user.auth) {
+
+                     const proyecto = await Proyectos.findById(args.proyectoId,{"estadoActual":1})
+                    console.log (proyecto.estadoActual)
+
+                    if(proyecto.estadoActual==="Activo"){
+
                     return await Proyectos.findByIdAndUpdate(args.proyectoId,
                         {
                             nombreProyecto: args.nombreProyecto,
@@ -364,6 +370,16 @@ const Mutation = new GraphQLObjectType({
                         }, {
                         new: true
                     });
+
+                }
+
+                else{
+
+                    console.log("El Proyecto seleccionado no se encuentra activo ")
+
+                }
+
+
                 }
                 else {
                     return null
@@ -372,27 +388,42 @@ const Mutation = new GraphQLObjectType({
         },
 
 
-
-        /* Agregar un nuevo Usuario */
         crearAvance: {
             type: AvanceType,
             args: {
                 proyectoId: { type: GraphQLID },
                 descripcion: { type: GraphQLString }
             },    
-            async resolve(_, args, context) {
+            async resolve(parents, args, context) {
                 console.log(context);
-                if (context.user.auth) { 
-                    console.log(args);
+                console.log(args);
+
+                if (context.user.auth){
+                
+                const proyecto = await Proyectos.findById(args.proyectoId,{"estadoActual":1})
+                console.log (proyecto.estadoActual)
+
+                if(proyecto.estadoActual==="Activo"){
+                
                     const Avance = new Avances({
                         proyectoId: args.proyectoId,
                         descripcion: args.descripcion
                     });
-                    return await Avance.save();
+                    return await Avance.save();                    
+
                 }
+            
+            
+                else {
+                    console.log("El proyecto seleccionado se encuentra inactivo")
+                } 
+
+            }
+
                 else {
                     return null
-                } 
+
+                }
             },
 
         },
