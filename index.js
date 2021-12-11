@@ -25,10 +25,13 @@ const validarJwt = (req, res, next) => {
   }
 
   try {
-    const { uid, nombre } = jwt.verify(token, secret);
-    console.log("El token es: ", token);
-    console.log(uid, nombre);
-    req.user = { auth: true };
+    const { uid, nombre, rol } = jwt.verify(token, secret);
+/*     console.log("El token es: ", token);
+    console.log(uid, nombre,rol); */
+    req.uid=uid;
+    req.user = nombre;
+    req.rol = rol;
+    
     return next();
   } catch (error) {
     req.user = { auth: false };
@@ -65,7 +68,9 @@ app.use("/graphql", graphqlHTTP((req) => ({
     graphiql : true,
     schema : schema,
     context : {
-        user : req.user
+        user : req.user,
+        uid: req.uid,
+        rol:req.rol
     }
 })));
 

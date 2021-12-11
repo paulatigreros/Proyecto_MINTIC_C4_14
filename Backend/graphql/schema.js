@@ -9,11 +9,12 @@ const Solicitudes = require("../Models/Solicitudes");
 const jwt = require("jsonwebtoken");
 const secret = "mi_llave"
 
-const generarJwt = (uid, name) => {
+const generarJwt = (uid, nombre , rol) => {
     return new Promise((resolve, reject) => {
         const payload = {
             uid,
-            name
+            nombre,
+            rol
         }
         jwt.sign(payload, secret, { expiresIn: "2h" },
             (err, token) => {
@@ -59,7 +60,8 @@ const AvanceType = new GraphQLObjectType({
     fields: () => ({
         descripcion: { type: GraphQLString },
         observacion: { type: GraphQLString },
-        proyectoId: { type: GraphQLID }
+        proyectoId: { type: GraphQLID },
+        usuarioId: { type: GraphQLID }
     }),
 })
 
@@ -87,6 +89,9 @@ const ProyectoType = new GraphQLObjectType({
         estadoActual: { type: GraphQLString },
         fase: { type: GraphQLString },
         lider: { type: GraphQLID },
+        fechaInicioproyecto: { type: GraphQLString },
+        fechaFinalproyecto: { type: GraphQLString },
+
 
         avance: {
             type: new GraphQLList(AvanceType),
@@ -138,7 +143,7 @@ const RootQuery = new GraphQLObjectType({
 
             resolve(_, args, context) {
                 console.log(context);
-                if (context.user.auth) {
+                if (context.rol==="Administrador") {
                     return Proyectos.find()
                 }
                 else {
@@ -170,7 +175,7 @@ const RootQuery = new GraphQLObjectType({
 
             resolve(_, args, context) {
                 console.log(context);
-                if (context.user.auth) {
+                if (context.rol==="Administrador") {
                     return Usuarios.find()
                 }
                 else {
@@ -240,9 +245,9 @@ const RootQuery = new GraphQLObjectType({
             },
 
             async resolve(parents, { correo, password }) {
-                const Usuario = await Usuarios.findOne({ correo }, { "password": 1, "nombre": 1, "estado": 1 })
+                const Usuario = await Usuarios.findOne({ correo }, { "password": 1, "nombre": 1, "estado": 1, "rol": 1 })
 
-
+                console.log(Usuario.rol)
 
                 if (Usuarios === '') {
                     console.log("Usuario no encontrado")
@@ -255,7 +260,7 @@ const RootQuery = new GraphQLObjectType({
                 const validarPassword = bcrypt.compareSync(password, Usuario.password)
 
                 if (validarPassword && Usuario.estado === "Autorizado") {
-                    const token = await generarJwt(Usuario.id, Usuario.nombre)
+                    const token = await generarJwt(Usuario.id, Usuario.nombre, Usuario.rol)
                     console.log(token);
 
                 }
@@ -292,7 +297,8 @@ const Mutation = new GraphQLObjectType({
                 estadoAprobacion: { type: GraphQLString },
                 estadoActual: { type: GraphQLString },
                 fase: { type: GraphQLString },
-                lider: { type: GraphQLID }
+                lider: { type: GraphQLID },
+                
             },
             async resolve(_, args, context) {
                 console.log(context);
@@ -306,7 +312,8 @@ const Mutation = new GraphQLObjectType({
                         estadoAprobacion: args.estadoAprobacion,
                         estadoActual: args.estadoActual,
                         fase: args.fase,
-                        lider: args.lider
+                        lider: args.lider,
+                        fechaInicioproyecto:args.fechaInicioproyecto
                     });
                     return await Proyecto.save();
                 }
@@ -327,7 +334,7 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                if (context.user.auth) {
+                if (context.rol==="Administrador") {
                     return await Proyectos.findByIdAndUpdate(args.proyectoId,
                         {
                             estadoAprobacion: args.estadoAprobacion,
@@ -338,10 +345,162 @@ const Mutation = new GraphQLObjectType({
                     });
                 }
                 else {
+                    console.log("Usted no tiene permisos para esta función")
                     return null
                 }
             },
         },
+
+
+        AprobacionProyecto: {
+            type: ProyectoType,
+            args: {
+                proyectoId: { type: GraphQLID },
+                estadoAprobacion: { type: GraphQLString },
+
+            },
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.rol==="Administrador") {
+                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                        {
+                            estadoAprobacion: args.estadoAprobacion,
+
+                        }, {
+                        new: true
+                    });
+                }
+                else {
+                    console.log("Usted no tiene permisos para esta función")
+                    return null
+                }
+            },
+        },
+
+        ActualizarEstado: {
+            type: ProyectoType,
+            args: {
+                proyectoId: { type: GraphQLID },
+                estadoActual: { type: GraphQLString },
+
+            },
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.rol==="Administrador") {
+                    const Proyecto = await Proyectos.findById(args.proyectoId,{"fase":1}) 
+                    if(args.estadoActual==="Activo" || Proyecto.fase===""  ){
+
+                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                        {
+                            estadoActual: args.estadoActual,
+                            fase:"Iniciado",
+                            fechaInicioproyecto:new Date()
+
+                        }, {
+                        new: true
+                    });
+
+                    }
+
+                    else {return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                        {
+                            estadoActual: args.estadoActual,
+                        
+
+                        }, {
+                        new: true
+                    });}
+                        
+
+                }
+                else {
+                    console.log("Usted no tiene permisos para esta función")
+                    return null
+                }
+            },
+        },
+
+        ActualizarFaseProyecto: {
+            type: ProyectoType,
+            args: {
+                proyectoId: { type: GraphQLID },
+                fase: { type: GraphQLString },
+            },
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.rol==="Administrador") {
+
+                    const Proyecto= await Proyectos.findById(args.proyectoId,{"fase":1})
+                    if (Proyecto.fase==="En desarrollo" || args.fase ==="Terminado" ){
+
+                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                        {
+                            fase: args.fase,
+                            estadoActual:"Inactivo",
+                            fechaFinalproyecto: new Date()
+                        }, {
+                        new: true
+                    });
+
+                    }
+
+                    else{
+                        return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                            {
+                                fase: args.fase,
+                            }, {
+                            new: true
+                        });
+
+                    }
+                }
+                else {
+                    console.log("Usted no tiene permisos para esta función")
+                    return null
+                }
+            },
+        },
+
+        ReactivarProyecto: {
+            type: ProyectoType,
+            args: {
+                proyectoId: { type: GraphQLID },
+                estadoActual: { type: GraphQLString },
+            },
+            async resolve(parent, args, context) {
+                console.log(context);
+                if (context.rol==="Administrador") {
+
+                    const Proyecto= await Proyectos.findById(args.proyectoId,{"fase":1})
+                    if (Proyecto.fase!="Terminado" ){
+
+                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                        {
+                            estadoActual:args.estadoActual,
+                            fechaInicioproyecto: new Date(),
+                        }, {
+                        new: true
+                    });
+
+                    }
+
+                    else{
+                        return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                            {
+                                fase: args.fase,
+                            }, {
+                            new: true
+                        });
+
+                    }
+                }
+                else {
+                    console.log("Usted no tiene permisos para esta función")
+                    return null
+                }
+            },
+        },
+
 
         ActualizarDatosProyectoLider: {
             type: ProyectoType,
@@ -395,19 +554,29 @@ const Mutation = new GraphQLObjectType({
                 descripcion: { type: GraphQLString }
             },    
             async resolve(parents, args, context) {
-                console.log(context);
+               console.log(context);
                 console.log(args);
-
-                if (context.user.auth){
+                /* console.log(context.uid) */
+                /* if (context.user.auth){ */
                 
-                const proyecto = await Proyectos.findById(args.proyectoId,{"estadoActual":1})
-                console.log (proyecto.estadoActual)
+                const proyecto = await Proyectos.findById(args.proyectoId,{"estadoActual":1},)
+                const ID = context.uid
+                const PROYECTO = args.proyectoId
+                const solicitud = await Solicitudes.find(/* {$and:[ */{ID}/* ,{PROYECTO}]} */)    
+                console.log(PROYECTO)
+                console.log(solicitud)
 
-                if(proyecto.estadoActual==="Activo"){
+                if(proyecto.estadoActual==="Activo" || solicitud.proyectoId === args.proyectoId || 
+                 solicitud.estadoSolicitud==="Aprobado")
+                 {
                 
+                const usuario= await Usuarios.find({ID},{"nombre":1}) 
+                /* console.log(ID)  */  
                     const Avance = new Avances({
                         proyectoId: args.proyectoId,
-                        descripcion: args.descripcion
+                        descripcion: args.descripcion,
+                        usuarioId: usuario.nombre
+                        
                     });
                     return await Avance.save();                    
 
@@ -418,12 +587,12 @@ const Mutation = new GraphQLObjectType({
                     console.log("El proyecto seleccionado se encuentra inactivo")
                 } 
 
-            }
+            /* } */
 
-                else {
+               /*  else {
                     return null
 
-                }
+                } */
             },
 
         },
@@ -440,9 +609,14 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                if (context.user.auth) {
+                /* if (context.user.auth) { */
                     const salt = bcrypt.genSaltSync();
-                    /*  const password= bcrypt.hashSync(args.password, salt);  */
+                    const correo = args.correo
+                    const validar = await Usuarios.findOne({correo})
+
+                    console.log(validar)
+
+                    if (validar==null){
                     const Usuario = new Usuarios({
                         nombre: args.nombre,
                         correo: args.correo,
@@ -450,12 +624,18 @@ const Mutation = new GraphQLObjectType({
                         rol: args.rol,
                         password: bcrypt.hashSync(args.password, salt),
                     });
+                    
 
                     return await Usuario.save();
                 }
-                else {
+                else{   
+                    console.log("Ya existe un usuario con el email digitado")
+            }
+                
+            /* } */
+               /*  else {
                     return null
-                }
+                } */
             }
         },
 
@@ -485,7 +665,7 @@ const Mutation = new GraphQLObjectType({
             }
         },
 
-        ActualizarEstado: {
+        ActualizarEstadoUsuario: {
             type: UsuarioType,
             args: {
                 id: { type: GraphQLID },
@@ -493,7 +673,7 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                if (context.user.auth) {
+                if (context.rol==="Administrador") {
                     return await Usuarios.findByIdAndUpdate(args.id,
                         {
                             estado: args.estado
