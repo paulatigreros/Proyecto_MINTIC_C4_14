@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 const mongoose = require("mongoose");
-const schema = require("./Backend/graphql/schema");
+const schema = require("./graphql/schema");
 const express = require('express');
 const { graphqlHTTP } = require("express-graphql");
 const app = express();

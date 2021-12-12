@@ -147,6 +147,14 @@ const RootQuery = new GraphQLObjectType({
                 if (context.rol==="Administrador" || context.rol==="Estudiante") {
                     return Proyectos.find()
                 }
+
+                else if(context.rol==="Lider"){
+
+                    const proyectos = await Proyectos.find({ lider:context.uid })
+                    return proyectos
+
+                }
+
                 else {
                     return null
                 }
@@ -200,26 +208,19 @@ const RootQuery = new GraphQLObjectType({
                 if (context.rol==="Administrador") {
                     return Usuarios.find()
                 }
-                else {
-                    return null
-                }
-            }
-        },
 
+                else if(context.rol==="Lider"){
 
-        listarEstudiantes: {
-            type: new GraphQLList(UsuarioType),
-
-            resolve(_, args, context) {
-                console.log(context);
-                if (context.rol==="Lider") {
                     return Usuarios.find({ rol: "Estudiante" })
+
                 }
+
                 else {
                     return null
                 }
             }
         },
+
 
         listarSolicitudes: {
             type: new GraphQLList(ProyectoType),
@@ -237,23 +238,6 @@ const RootQuery = new GraphQLObjectType({
         },
 
 
-        listarProyectosLider: {
-            type: new GraphQLList(ProyectoType),
-
-            args: {
-
-            },
-            async resolve(_, args, context) {
-                console.log(context);
-                if (context.rol==="Lider") {
-                    const proyectos = await Proyectos.find({ lider:context.uid })
-                    return proyectos
-                }
-                else {
-                    return null
-                }
-            }
-        },
 
 
 
@@ -340,33 +324,7 @@ const Mutation = new GraphQLObjectType({
             },
         },
 
-        ActualizarEstadosProyecto: {
-            type: ProyectoType,
-            args: {
-                proyectoId: { type: GraphQLID },
-                estadoAprobacion: { type: GraphQLString },
-                estadoActual: { type: GraphQLString },
-                fase: { type: GraphQLString },
-            },
-            async resolve(parent, args, context) {
-                console.log(context);
-                if (context.rol==="Administrador") {
-                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
-                        {
-                            estadoAprobacion: args.estadoAprobacion,
-                            estadoActual: args.estadoActual,
-                            fase: args.fase
-                        }, {
-                        new: true
-                    });
-                }
-                else {
-                    console.log("Usted no tiene permisos para esta función")
-                    return null
-                }
-            },
-        },
-
+        
 
         AprobacionProyecto: {
             type: ProyectoType,
@@ -767,7 +725,6 @@ const Mutation = new GraphQLObjectType({
         crearSolicitud: {
             type: SolicitudType,
             args: {
-                usuarioId: { type: GraphQLID },
                 proyectoId: { type: GraphQLID },
                 fechaIngreso: { type: GraphQLString },
                 fechaEgreso: { type: GraphQLString },
