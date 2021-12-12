@@ -461,7 +461,7 @@ const Mutation = new GraphQLObjectType({
                 if (context.rol==="Administrador") {
 
                     const Proyecto= await Proyectos.findById(args.proyectoId,{"fase":1})
-                    if (Proyecto.fase==="En desarrollo" || args.fase ==="Terminado" ){
+                    if (Proyecto.fase==="En desarrollo" && args.fase ==="Terminado" ){
 
                     return await Proyectos.findByIdAndUpdate(args.proyectoId,
                         {
