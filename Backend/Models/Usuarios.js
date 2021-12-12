@@ -29,10 +29,6 @@ const UsuariosSchema = Schema({
         require: true
     },
 
-    proyectos_asignados:{
-        type: ObjectId,
-        require: true
-    }
 })
 
 module.exports = model('UsuariosModelo', UsuariosSchema);

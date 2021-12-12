@@ -15,6 +15,18 @@ const AvancesSchema = Schema({
     proyectoId:{
         type:String,
         require:true
+    },
+
+    usuarioId:{
+        type:String,
+        require:true
+
+    },
+
+    fechaAvance:{
+        type:String,
+        require:true
+
     }
     
 })

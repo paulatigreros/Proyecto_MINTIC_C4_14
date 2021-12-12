@@ -56,6 +56,17 @@ const ProyectosSchema = Schema({
         require:true
     },
 
+    fechaInicioproyecto:{
+        type:String,
+        require:true
+    },
+
+    fechaFinalproyecto:{
+        type:String,
+        require:true
+    },
+
+
    
 
 })
