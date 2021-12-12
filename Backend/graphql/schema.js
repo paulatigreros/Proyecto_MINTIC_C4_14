@@ -340,33 +340,7 @@ const Mutation = new GraphQLObjectType({
             },
         },
 
-        ActualizarEstadosProyecto: {
-            type: ProyectoType,
-            args: {
-                proyectoId: { type: GraphQLID },
-                estadoAprobacion: { type: GraphQLString },
-                estadoActual: { type: GraphQLString },
-                fase: { type: GraphQLString },
-            },
-            async resolve(parent, args, context) {
-                console.log(context);
-                if (context.rol==="Administrador") {
-                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
-                        {
-                            estadoAprobacion: args.estadoAprobacion,
-                            estadoActual: args.estadoActual,
-                            fase: args.fase
-                        }, {
-                        new: true
-                    });
-                }
-                else {
-                    console.log("Usted no tiene permisos para esta función")
-                    return null
-                }
-            },
-        },
-
+      
 
         AprobacionProyecto: {
             type: ProyectoType,
