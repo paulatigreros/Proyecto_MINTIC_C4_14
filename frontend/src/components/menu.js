@@ -1,6 +1,5 @@
 import React from 'react'
 import Agregar from '../assets/img/Agregar.png';
-import Logo from '../assets/img/logo_col_tech.png';
 import '../App.css';
 /* import {
     BrowserRouter as Router,
