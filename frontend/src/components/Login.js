@@ -1,11 +1,10 @@
 import React from 'react'
-
-/* import Background from '../assets/img/Fondo.png' */
+import {Link} from "react-router-dom";
 
 function Login() {
     return (
         <div className='login2'>
-                 <body >
+                
                     <section class="login">
                         <h5>Ingreso de Usuario</h5>
                         <input class="controles" type="text" name="Usuario" placeholder="Usuario" />
@@ -14,7 +13,7 @@ function Login() {
                         <input class="botones" type="submit" name="" value="Registrar Nuevo Usuario" />
                     </section>
 
-                </body> 
+                
         </div>
 
     );

@@ -299,7 +299,7 @@ body {
   font-size: 15px !important;
   height: 60px;
   width: 870px;
-  color: white;
+  color: navy;
   text-align: center;
   background-color: #293542;
 }
@@ -308,15 +308,26 @@ body {
   height: 35px;
 }
 
+
+
 .divTabla td {
-  background-color: #19222b;
+  background-color: #d3dfde;
   height: 35px;
 }
 
 .divTabla td select {
-  background-color: #19222b;
+  background-color: #d3dfde;
   border: 0px;
-  color: white;
+  color: navy;
+}
+
+.encabezado{
+  font-size: 26px !important;
+  height: 38px;
+  width: 92%;
+  color:aliceblue;
+  margin-top: 2%;
+  text-align: right;
 }
 
 .divTablaventas {
@@ -329,9 +340,9 @@ body {
   font-size: 15px !important;
   height: 60px;
   width: 870px;
-  color: white;
+  color: navy;
   text-align: center;
-  background-color: #293542;
+  background-color: #d3dfde;
 }
 
 .divTablaventas th {
@@ -339,14 +350,14 @@ body {
 }
 
 .divTablaventas td {
-  background-color: #19222b;
+  background-color: #d3dfde;
   height: 35px;
 }
 
 .divTablaventas td select {
-  background-color: #19222b;
+  background-color: #d3dfde;
   border: 0px;
-  color: white;
+  color: navy;
 }
 
 
@@ -491,14 +502,14 @@ body {
 .login {
   width: 400px;
   height: 340px;
-  background: #6e7c8a;
+  background: #d3dfde;
   margin: auto;
   margin-top: 180px;
   -webkit-box-shadow: 7px 13px 37px #000;
           box-shadow: 7px 13px 37px #000;
   padding: 20px 30px;
-  border-top: 4px solid #19222b;
-  color: white;
+  border-top: 4px ;
+  color: navy;
 }
 
 .login h5 {
@@ -522,9 +533,9 @@ body {
 .botones {
   width: 100%;
   height: 40px;
-  background: #19222b;
+  background: #a4b9b8;
   border: none;
-  color: white;
+  color: navy;
   margin-bottom: 16px;
 }
 
@@ -553,12 +564,43 @@ width: 35px;
 margin-left: 147px;
 margin-top: -5px;
 height: 47px;
-filter: drop-shadow(5px 5px 10px #2e3e4e);
+filter: drop-shadow(5px 5px 10px #a4b9b8);
 }
 
 .login2 {
   overflow: hidden;
-  background-image: url('https://www.wearemarketing.com/media/cache/dynamic/rc/rdHgzdry//uploads/media/default/0001/21/0055400d5ced4f6b7007e7985b8e2152f3e32207.jpeg');
+  background-image: url('https://www.teahub.io/photos/full/65-650226_colorful-background-of-high-definition-fondos-de-pantalla.jpg');
   height: 100vh;
 }
 
+.acciones {
+  position: absolute;
+  margin-left: 47%;
+  margin-top: 30px;
+}
+
+.acciones table {
+  font-size: 15px !important;
+  height: 60px;
+  width: 870px;
+  color: navy;
+  text-align: center;
+  background-color: transparent;
+}
+
+.acciones th {
+  height: 35px;
+}
+
+
+
+.acciones td {
+  background-color: transparent;
+  height: 35px;
+}
+
+.acciones td select {
+  background-color: transparent;
+  border: 0px;
+  color: navy;
+}
