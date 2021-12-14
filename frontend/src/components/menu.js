@@ -1,17 +1,14 @@
 import React from 'react'
 import Agregar from '../assets/img/Agregar.png';
 import Logo from '../assets/img/logo_col_tech.png';
-import '../App.css';
-/* import {
-    BrowserRouter as Router,
- 
+import {
     Link
-  } from "react-router-dom"; */
-
-
-function menu() {
+  } from "react-router-dom";
+export const Menu = () => {
     return (
-        <div id="sideMenu" className="menu-expanded">
+        <div>
+
+<div id="sideMenu" className="menu-expanded">
             <div id="header">
                 <div id="title"></div>
                 <div id="menuBtn">
@@ -21,16 +18,15 @@ function menu() {
                 </div>
             </div>
             <div id="profile">
-                <div id="photo">{/* <Link to="Login"> */}<img src={Logo} alt=""/>{/* </Link></ */}div>
-                <div id="name"><span>Perfil</span></div>
+                <div id="name"><span>Gestión de proyectos UDEA</span></div>
             </div>
             <div id="menu-items">
                 <div class="item">
                     <a href={() => false}>
                     
                         <div class="icon"><img src={Agregar} alt=""/></div>
-                        {/* <div class="title"><span>Gestión de usuarios</span></div> */}
-                        <div class="title"><span>{/* <Link to="Gestionusuarios"> */}Gestión usuarios{/* </Link> */}</span></div>
+                        
+                        <div class="title"><span><Link to="Gestionusuarios">Datos Personales</Link></span></div>
                     </a>
                 </div> 
                 <div class="item separator">
@@ -40,8 +36,8 @@ function menu() {
                     <a href={() => false}>
                     
                         <div class="icon"><img src={Agregar} alt=""/></div>
-                        {/* <div class="title"><span>Gestión de productos</span></div> */} 
-                        <div class="title"><span>{/* <Link to="Gestionproductos"> */}Gestión productos{/* </Link> */}</span></div>
+                         
+                        <div class="title"><span><Link to="/Gestionusuarios">Usuarios</Link></span></div>
 
                     </a>
                 </div> 
@@ -51,16 +47,37 @@ function menu() {
                 <div class="item">
                     <a href={() => false}>
                         <div class="icon"><img src={Agregar} alt=""/></div>
-                        <div class="title"><span>{/* <Link to="Gestionventas"> */}Gestión ventas{/* </Link> */}</span></div>
+                        <div class="title"><span><Link to="Gestionventas">Proyectos</Link></span></div>
                     </a>
                 </div> 
                 <div class="item separator">
-                
+
                 </div>
+
+                <div class="item">
+                    <a href={() => false}>
+                        <div class="icon"><img src={Agregar} alt=""/></div>
+                        <div class="title"><span><Link to="Gestionventas">Solicitudes</Link></span></div>
+                    </a>
+                </div> 
+                <div class="item separator">
+
+                </div>
+                <div class="item">
+                    <a href={() => false}>
+                        <div class="icon"><img src={Agregar} alt=""/></div>
+                        <div class="title"><span><Link to="Gestionventas">Avances</Link></span></div>
+                    </a>
+                </div> 
+                <div class="item separator">
+
+                </div>
+
+
             </div>
         </div>
         </div>
     )
 }
 
-export default menu
+export default Menu

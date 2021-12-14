@@ -1,38 +1,32 @@
 import React from 'react'
-import '../App.css'
-import Headeringresousu from './Headeringresousu';
+import Headeringresoproyec from './Headeringresoproyec'
 
-const Ingresousuarios = () => {
+export const Ingresoproyecto = () => {
     return (
         <div>
-            <Headeringresousu />
+             <div>
+            <Headeringresoproyec />
             <div class="divTabla">
                 <table id="tablaIngresoDatos">
                     <tr>
-                        <td><h5>Nombre</h5></td>
+                        <td><h5>Nombre del proyecto</h5></td>
                         <td class="Izquierda"><input type="text" size="70" maxlength="60" name="Nombre" /></td>
                     </tr>
 
                     <tr>
-                        <td><h5>Roles de usuario</h5></td>
-                        <td class="Izquierda"><select name="SeleccionRol">
-
-                            <option>Administrador</option>
-
-                            <option>Lider</option>
-
-                            <option>Estudiante</option>
-
-                        </select></td>
+                        <td><h5>Presupuesto</h5></td>
+                        <td class="Izquierda"><input type="text" size="70" maxlength="60" name="Nombre" /></td>
                     </tr>
 
+
+
                     <tr>
-                        <td><h5>Correo electrónico</h5></td>
+                        <td><h5>Objetivos generales</h5></td>
                         <td class="Izquierda"><input type="text" size="70" maxlength="60" name="Correo" /></td>
                     </tr>
 
                     <tr>
-                        <td><h5>Contraseña</h5></td>
+                        <td><h5>Objetivos Especificos</h5></td>
                         <td class="Izquierda"><input type="text" size="70" maxlength="60" name="Contraseña" /></td>
                     </tr>
 
@@ -48,7 +42,7 @@ const Ingresousuarios = () => {
 
             </div>
         </div>
+        </div>
     )
 }
-
-export default Ingresousuarios
+export default Ingresoproyecto

@@ -3,7 +3,7 @@ import Persona from '../assets/img/persona_mas.png';
 import {Link} from "react-router-dom";
 
 
-const Headergestusuarios = () => {
+const Headergestavances = () => {
   /*   const titleadd = e =>  { 
         const { handletitle }=e.target 
     } */
@@ -11,7 +11,7 @@ const Headergestusuarios = () => {
         <div>
             <div id="headerPpal" class="headerPpal-expanded">
                 <img src={Persona} alt="" />
-                <span>GESTION DE USUARIOS</span>
+                <span>GESTION DE AVANCES</span>
                 <Link to="/"><button id ="Cerrar" class="Cerrar">
                     Cerrar sesión
                 </button></Link>
@@ -24,4 +24,4 @@ const Headergestusuarios = () => {
     )
 }
 
-export default Headergestusuarios
+export default Headergestavances

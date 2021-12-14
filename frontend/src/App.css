@@ -558,7 +558,80 @@ filter: drop-shadow(5px 5px 10px #2e3e4e);
 
 .login2 {
   overflow: hidden;
-  background-image: url('https://www.wearemarketing.com/media/cache/dynamic/rc/rdHgzdry//uploads/media/default/0001/21/0055400d5ced4f6b7007e7985b8e2152f3e32207.jpeg');
+  background-image: url('https://es.best-wallpaper.net/Blue-squares-abstract-picture_wallpapers.html');
   height: 100vh;
 }
 
+.divTablaEdi {
+  position: absolute;
+  margin: 20px 19%;
+  margin-top: 7%;
+}
+
+.divTablaEdi table {
+  font-size: 18px !important;
+  height: 150px;
+  width: 1000px;
+  color: white;
+  text-align: center;
+  background-color: #293542;
+}
+
+.divTablaEdi th {
+  height: 100px;
+}
+
+.divTablaEdi td {
+  background-color: #19222b;
+  height: 70px;
+  width: 70px;
+}
+
+.divTablaEdi td select {
+  background-color: #19222b;
+  border: 0px;
+  color: white;
+}
+
+.divTablaEdi2 {
+  position: absolute;
+  margin: 20px 19%;
+  margin-top: 7%;
+}
+
+.divTablaEdi2 table {
+  font-size: 15px !important;
+  height: 80px;
+  width: 870px;
+  color: white;
+  text-align: center;
+  background-color: #293542;
+}
+
+.divTablaEdi2 th {
+  height: 50;
+}
+
+.divTablaEdi2 td {
+  background-color: #19222b;
+  height: 200px;
+}
+
+.divTablaEdi2 td select {
+  background-color: #19222b;
+  border: 0px;
+  color: white;
+}
+
+#celda{
+  width: 25px;
+  height: 30px;
+
+}
+
+.guardar{
+  width: 100px;
+  height: 30px;
+
+
+}

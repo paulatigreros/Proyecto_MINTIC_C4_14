@@ -1,21 +1,17 @@
 import React from 'react';
 import Agenda from '../assets/img/Agenda.png';
-/* import {
-    BrowserRouter as Router,
-  
-    Link
-  } from "react-router-dom";
- */
+import {Link} from "react-router-dom";
+
 
 const Headeringresousu = () => {
     return (
         <div>
             <div id="headerPpal" class="headerPpal-expanded">
                 <img src={Agenda} alt="" />
-                <span>INGRESO/EDICIÓN DE USUARIO</span>
-                {/* <Link to="Login">  */}<button id ="Cerrar" class="Cerrar">
+                <span>REGISTRO DE USUARIO</span>
+                <Link to="/"><button id ="Cerrar" class="Cerrar">
                     Cerrar sesión
-                </button>{/* </Link> */}
+                </button></Link>
                 <span id="Usuario" class="Usuario" >
                     Nombre de usuario activo (admin123)
                     

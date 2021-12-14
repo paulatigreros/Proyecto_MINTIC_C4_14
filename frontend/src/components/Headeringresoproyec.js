@@ -1,17 +1,14 @@
-import React from 'react';
-import Persona from '../assets/img/persona_mas.png';
+import React from 'react'
+import Agenda from '../assets/img/Agenda.png';
 import {Link} from "react-router-dom";
 
-
-const Headergestusuarios = () => {
-  /*   const titleadd = e =>  { 
-        const { handletitle }=e.target 
-    } */
+export const Headeringresoproyec = () => {
     return (
         <div>
+                    <div>
             <div id="headerPpal" class="headerPpal-expanded">
-                <img src={Persona} alt="" />
-                <span>GESTION DE USUARIOS</span>
+                <img src={Agenda} alt="" />
+                <span>INGRESO DE PROYECTO</span>
                 <Link to="/"><button id ="Cerrar" class="Cerrar">
                     Cerrar sesión
                 </button></Link>
@@ -20,8 +17,8 @@ const Headergestusuarios = () => {
                 </span>
             </div>
         </div>
-
+            
+        </div>
     )
 }
-
-export default Headergestusuarios
+export default Headeringresoproyec

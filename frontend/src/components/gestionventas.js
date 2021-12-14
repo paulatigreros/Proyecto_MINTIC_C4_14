@@ -90,6 +90,8 @@ function gestionventas() {
                     </tr>
                 </table>
             </div>
+
+            
         </div>
 
     )
