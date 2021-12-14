@@ -1,6 +1,8 @@
 import React from 'react';
 import '../App.css';
-import { link } from 'react-router-dom';
+import {
+    Link
+  } from "react-router-dom";
 
 const ActualizarObservaciones = () => {
     return (
@@ -40,8 +42,7 @@ const ActualizarObservaciones = () => {
                             </button>
                         </h5></td>
                         <td ><h5>
-                            <button class="Guardar">
-                                Atrás
+                            <button class="Guardar"><span><Link to="/IngresoProyecto">Atrás</Link></span>
                             </button>
                         </h5></td>
                     </tr>

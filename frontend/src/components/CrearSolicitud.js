@@ -37,8 +37,7 @@ const CrearSolicitud = () => {
                             </button>
                         </h5></td>
                         <td><h5>
-                            <button class="Guardar">
-                                Atrás
+                            <button class="Guardar"><span><Link to="Gestionsolicitudes">Solicitudes</Link></span>
                             </button>
                         </h5></td>
                     </tr>

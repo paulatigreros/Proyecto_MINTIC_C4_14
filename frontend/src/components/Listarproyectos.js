@@ -110,11 +110,9 @@ const ListarProyectos = () => {
                         <td><h5>
                             <button class="Guardar"> Guardar </button>
                         </h5></td>
+
                         <td><h5>
-                            <button class="Guardar"> Atrás </button>
-                        </h5></td>
-                        <td><h5>
-                            <button class="Guardar"> Crear nuevo proyecto </button>
+                            <button class="Guardar"><span><Link to="/CrearProyecto"> Crear nuevo proyecto</Link></span>  </button>
                         </h5></td>
                     </tr>
 

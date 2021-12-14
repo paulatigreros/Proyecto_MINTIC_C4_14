@@ -72,13 +72,13 @@ const IngresoProyecto = () => {
                 <div class="acciones" align="center">
                     <tr>
                         <td><h5>
-                            <button class="Guardar"> Actualizar datos del proyecto </button>
+                            <button class="Guardar"> <span><Link to="/Edicionproyectos">Actualizar datos del proyecto </Link></span></button>
                         </h5></td>
                         <td><h5>
-                            <button class="Guardar"> Crea Avance </button>
+                            <button class="Guardar"><span><Link to="/CrearAvance">Crear Avance </Link></span>  </button>
                         </h5></td>
                         <td><h5>
-                            <button class="Guardar"> Atrás </button>
+                            <button class="Guardar"><span><Link to="/Listarproyectos">Atrás </Link></span> </button>
                         </h5></td>
                     </tr>
 
