@@ -1,5 +1,6 @@
 import React from 'react'
 import '../App.css'
+import {Link} from "react-router-dom";
 
 const Ingresousuarios = () => {
     return (
@@ -41,11 +42,19 @@ const Ingresousuarios = () => {
                 </table>
 
                 <div class="acciones" align="center">
-                    <h5>
-                        <button class="Guardar">
-                            Guardar
-                        </button>
-                    </h5>
+                    <tr >
+                        <td > <h5>
+                            <button class="Guardar">
+                                Guardar
+                            </button>
+                        </h5></td>
+                        <td ><h5>
+                            <button class="Guardar"><span><Link to="/">Atrás</Link></span>
+                            </button>
+                        </h5></td>
+                    </tr>
+
+
                 </div>
 
             </div>

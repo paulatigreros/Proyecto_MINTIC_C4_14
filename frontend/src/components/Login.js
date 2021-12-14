@@ -10,7 +10,7 @@ function Login() {
                         <input class="controles" type="text" name="Usuario" placeholder="Usuario" />
                         <input class="controles" type="password" name="Contraseña" placeholder="Contraseña" />
                         <input class="botones" type="submit" name="" value="Ingresar" />
-                        <input class="botones" type="submit" name="" value="Registrar Nuevo Usuario" />
+                        <Link to="/Ingresousuarios"><input class="botones" type="submit" name="" value="Registrar Nuevo Usuario" /></Link>
                     </section>
 
                 

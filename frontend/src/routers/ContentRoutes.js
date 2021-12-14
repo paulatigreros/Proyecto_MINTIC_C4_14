@@ -1,7 +1,6 @@
 import React from 'react'
 import Gestionusuarios from '../components/Gestionusuarios';
-import Ingresousuarios from "../components/Ingresousuarios";
-import Crearproyecto  from '../components/Crearproyecto';
+import CrearProyecto  from '../components/CrearProyecto';
 import Edicionproyectos from '../components/Edicionproyectos';
 import Actualizaravance from '../components/Actualizaravance';
 import Gestionavances from '../components/Gestionavances';
@@ -17,16 +16,15 @@ import ListarProyectos from "../components/Listarproyectos";
 import Menu from '../components/Menu'
 import { Route, BrowserRouter, Routes } from "react-router-dom";
 
+
 export const ContentRoutes = () => {
     return (
         <>
 <Menu/>
 <Routes>
 
-
 <Route exact path="/Gestionusuarios" element={<Gestionusuarios/>} />
-<Route exact path="/Ingresousuarios" element={<Ingresousuarios/>} />
-<Route exact path="/Crearproyecto" element={<Crearproyecto/>} />
+<Route exact path="/CrearProyecto" element={<CrearProyecto/>} />
 <Route exact path="/Edicionproyectos" element={<Edicionproyectos/>} />
 <Route exact path="/Actualizaravance" element={<Actualizaravance/>} />
 <Route exact path="/Gestionavances" element={<Gestionavances/>} />

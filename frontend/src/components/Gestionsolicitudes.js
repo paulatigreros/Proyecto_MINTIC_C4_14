@@ -9,14 +9,12 @@ const Gestionsolicitudes = () => {
                 <h5>Solicitudes</h5>
             </div>
 
-            <div class="iconosVentas">
-
-
-            </div>
+           
             <div class="filtro">
                 <span>Buscar</span>
                 <input type="text" class="redondo" />
             </div>
+
             <div class="divTabla">
                 <table>
                     <tr>
