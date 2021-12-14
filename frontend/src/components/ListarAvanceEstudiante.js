@@ -55,7 +55,7 @@ const ListarAvanceEstudiante = () => {
                 </div>
 
             </div>
-        </div>
+       
     )
 }
 

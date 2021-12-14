@@ -604,3 +604,9 @@ filter: drop-shadow(5px 5px 10px #a4b9b8);
   border: 0px;
   color: navy;
 }
+
+#tablaIngresoDatosAvance{
+  position: absolute;
+  margin-left: 47%;
+  margin-top: 30px;
+}
