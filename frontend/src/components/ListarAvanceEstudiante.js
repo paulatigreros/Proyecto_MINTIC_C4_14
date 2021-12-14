@@ -51,13 +51,6 @@ const ListarAvanceEstudiante = () => {
                     </tr>
                 </table>
 
-                <div class="acciones"  align="center">
-                    <tr>
-                        <td><h5>
-                            <button class="Guardar"> Atrás </button>
-                        </h5></td>
-                    </tr>
-
 
                 </div>
 

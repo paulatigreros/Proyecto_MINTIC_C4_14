@@ -1,6 +1,6 @@
 import React from 'react'
 import '../App.css'
-import {Link} from "react-router-dom";
+
   
 const DatosPersonales = () => {
     return (
@@ -41,11 +41,7 @@ const DatosPersonales = () => {
                                 Guardar
                             </button>
                         </h5></td>
-                        <td><h5>
-                            <button class="Guardar">
-                                Atrás
-                            </button>
-                        </h5></td>
+
                     </tr>
 
 

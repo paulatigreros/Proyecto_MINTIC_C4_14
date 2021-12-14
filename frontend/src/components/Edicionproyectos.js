@@ -1,4 +1,7 @@
 import React from 'react'
+import {
+    Link
+  } from "react-router-dom";
 
 export const Edicionproyectos = () => {
     return (
@@ -51,6 +54,11 @@ export const Edicionproyectos = () => {
                     <h5>
                         <button class="guardar">
                             Guardar
+                        </button>
+                    </h5>
+                    <h5>
+                        <button class="guardar">
+                        <span><Link to="/IngresoProyecto">Proyecto</Link></span>
                         </button>
                     </h5>
                 </div>
