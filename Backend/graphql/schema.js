@@ -43,6 +43,7 @@ const {
 const UsuarioType = new GraphQLObjectType({
     name: "Usuario",
     fields: () => ({
+        id: { type: GraphQLID },
         nombre: { type: GraphQLString },
         password: { type: GraphQLString },
         correo: { type: GraphQLString },
@@ -142,7 +143,7 @@ const RootQuery = new GraphQLObjectType({
             type: new GraphQLList(ProyectoType),
 
 
-            resolve(_, args, context) {
+            async resolve(_, args, context) {
                 console.log(context);
                 if (context.rol==="Administrador" || context.rol==="Estudiante") {
                     return Proyectos.find()
@@ -167,7 +168,7 @@ const RootQuery = new GraphQLObjectType({
             args: {
                 
             },
-            resolve(_, args, context) {
+            async resolve(_, args, context) {
                 console.log(context);
                 if (context.rol==="Estudiante") 
                 {
@@ -205,21 +206,23 @@ const RootQuery = new GraphQLObjectType({
 
             resolve(_, args, context) {
                 console.log(context);
-                if (context.rol==="Administrador") {
+               /*  if (context.rol==="Administrador" */ /*) /* { */
                     return Usuarios.find()
-                }
+               /*  } */
 
-                else if(context.rol==="Lider"){
+               /*  else if(context.rol==="Lider"){ */
 
-                    return Usuarios.find({ rol: "Estudiante" })
+                   /*  return Usuarios.find({ rol: "Estudiante" }) */
 
-                }
+               /*  } */
 
-                else {
-                    return null
-                }
-            }
+                /* else { */
+                    /* return null */
+               /*  } */
+            /* } */
         },
+
+    },
 
 
         listarSolicitudes: {

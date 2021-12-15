@@ -4,6 +4,11 @@ const { Schema, model } = require('mongoose');
 
 const UsuariosSchema = Schema({
 
+    id:{
+        type: String,
+        require: true
+    },
+
     nombre:{
         type: String,
         require: true

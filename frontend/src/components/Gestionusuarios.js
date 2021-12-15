@@ -1,11 +1,26 @@
 import React from 'react'
 import '../App.css'
-
+import { useQuery } from '@apollo/client';
 import Headergestusuarios from './Headergestusuarios';
+import GET_USUARIOS from '../Apollo/gql/GetUsuarios'
 
 
 const Gestionusuarios =() =>  {
+    
+
+        const { loading, data, error } = useQuery(GET_USUARIOS);
+    
+    
+    
+    
+    
     return (
+
+        <>
+        {loading && <p>Cargando ...</p>}
+        {error && <p>Se ha producido un error</p>}
+        {
+            data &&
         <div>
               <Headergestusuarios />  
                 <div class="iconosVentas">
@@ -18,47 +33,35 @@ const Gestionusuarios =() =>  {
     </div>
     <div class="divTabla">
         <table>
+        <thead>
             <tr>
-                <th>Id Usuario</th>
+                {/* <th>Id Usuario</th> */}
                 <th>Nombre</th>
                 <th>Rol</th>
                 <th>Correo</th>
                 <th>Estado</th>
             </tr>
-            <tr>
-                <td>Dato</td>
-                <td>Dato</td>
-                <td>Dato</td>
-                <td>Dato</td>
-                <td><select >
+        </thead>
+
+        <tbody>
+            {
+                data.listarUsuarios.map((usuario, index) => (
+
+            <tr key={usuario.id}>
+                <th scope="row">{index + 1}</th>
+                {/* <td>{Usuario.id}</td> */}
+                <td>{usuario.nombre}</td>
+                <td>{usuario.rol}</td>
+                <td>{usuario.correo}</td>
+{/*                 <td><select >
                             <option>Pendiente</option>
                             <option>Autorizado</option>
                             <option>No Autorizado</option>
-                </select></td>
+                </select></td> */}
             </tr>
-            <tr>
-                <td>Dato</td>
-                <td>Dato</td>
-                <td>Dato</td>
-                <td>Dato</td>
-                <td><select >
-                            <option>Pendiente</option>
-                            <option>Autorizado</option>
-                            <option>No Autorizado</option>
-                </select></td>
-                
-            </tr>
-            <tr>
-                <td>Dato</td>
-                <td>Dato</td>
-                <td>Dato</td>
-                <td>Dato</td>
-                <td><select >
-                            <option>Pendiente</option>
-                            <option>Autorizado</option>
-                            <option>No Autorizado</option>
-                </select></td>
-            </tr>
+                ))
+                }   
+           </tbody>
         </table>
 
         <div align="center">
@@ -70,7 +73,15 @@ const Gestionusuarios =() =>  {
                 </div>
     </div>
         </div>
+
+    }
+
+</>
+
     )
+
+
+    
 }
 
 export default Gestionusuarios

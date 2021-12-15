@@ -24,12 +24,16 @@ export const ContentRoutes = () => {
 <Route exact path="/Gestionproductos" element={<Gestionproductos/>} />
 <Route exact path="/Ingresoproductos" element={<Ingresoproductos/>} />
 <Route exact path="/Ingresoventas" element={<Ingresoventas/>} />
-<Route exact path="/Ingresousuarios" element={<Ingresousuarios/>} />
 <Route exact path="/Ingresoproyecto" element={<Ingresoproyecto/>} />
 <Route exact path="/Edicionproyectos" element={<Edicionproyectos/>} />
 <Route exact path="/Actualizaravance" element={<Actualizaravance/>} />
 <Route exact path="/Gestionavances" element={<Gestionavances/>} />
 <Route exact path="/Gestionsolicitudes" element={<Gestionsolicitudes/>} />
+
+
+
+
+
 </Routes>
         </>
     )
