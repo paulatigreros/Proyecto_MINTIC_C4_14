@@ -142,7 +142,7 @@ const RootQuery = new GraphQLObjectType({
             type: new GraphQLList(ProyectoType),
 
 
-            resolve(_, args, context) {
+             async resolve(_, args, context) {
                 console.log(context);
                 if (context.rol==="Administrador" || context.rol==="Estudiante") {
                     return Proyectos.find()
@@ -205,19 +205,19 @@ const RootQuery = new GraphQLObjectType({
 
             resolve(_, args, context) {
                 console.log(context);
-                if (context.rol==="Administrador") {
+               /*  if (context.rol==="Administrador") { */
                     return Usuarios.find()
-                }
+               /*  } */
 
-                else if(context.rol==="Lider"){
+                /* else if(context.rol==="Lider"){ */
 
-                    return Usuarios.find({ rol: "Estudiante" })
+                    /* return Usuarios.find({ rol: "Estudiante" })
 
-                }
+                } */
 
-                else {
+                /* else {
                     return null
-                }
+                } */
             }
         },
 

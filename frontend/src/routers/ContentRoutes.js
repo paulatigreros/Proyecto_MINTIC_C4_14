@@ -13,7 +13,7 @@ import DatosPersonales from "../components/DatosPersonales";
 import IngresoProyecto from "../components/IngresoProyecto";
 import ListarAvanceEstudiante from "../components/ListarAvanceEstudiante";
 import ListarProyectos from "../components/Listarproyectos";
-import Menu from '../components/Menu'
+import Menu from "../components/Menu"
 import { Route, BrowserRouter, Routes } from "react-router-dom";
 
 
