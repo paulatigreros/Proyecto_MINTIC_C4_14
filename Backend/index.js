@@ -6,6 +6,7 @@ const { graphqlHTTP } = require("express-graphql");
 const app = express();
 const jwt = require("jsonwebtoken");
 const dotenv= require("dotenv");
+const cors = require("cors")
 
 dotenv.config();
 
@@ -42,7 +43,7 @@ const validarJwt = (req, res, next) => {
 
 
 app.use(validarJwt);
-
+app.use(cors())
 
 
 const dbConnection = async () =>{
