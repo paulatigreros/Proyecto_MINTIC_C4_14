@@ -145,21 +145,21 @@ const RootQuery = new GraphQLObjectType({
 
 
              async resolve(_, args, context) {
-                console.log(context);
-                if (context.rol==="Administrador" || context.rol==="Estudiante") {
-                    return Proyectos.find()
-                }
+/*                 console.log(context);
+                if (context.rol==="Administrador" || context.rol==="Estudiante") { */
+                    return await Proyectos.find()
+                /* } */
 
-                else if(context.rol==="Lider"){
+                /* else if(context.rol==="Lider"){ */
 
-                    const proyectos = await Proyectos.find({ lider:context.uid })
-                    return proyectos
+                    /* const proyectos = await Proyectos.find({ lider:context.uid })
+                    return proyectos */
 
-                }
+                /* } */
 
-                else {
+                /* else {
                     return null
-                }
+                } */
             }
 
         },

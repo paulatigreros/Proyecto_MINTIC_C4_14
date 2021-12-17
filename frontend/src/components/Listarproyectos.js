@@ -1,9 +1,54 @@
 import React from 'react'
 import '../App.css'
 import { Link } from "react-router-dom";
+import { useQuery } from '@apollo/client';
+import { gql } from '@apollo/client'
+
+
+const GET_PROYECTOS = gql`
+
+query{
+    listarProyectos {
+      nombreProyecto
+      objetivosGenerales
+      objetivosEspecificos
+      presupuesto
+      estadoAprobacion
+      estadoActual
+      fase
+      lider
+      avance{
+          descripcion
+          observacion
+          proyectoId
+      }
+      solicitud{
+          usuarioId
+          fechaIngreso
+          fechaEgreso
+          estadoSolicitud
+          proyectoId
+      }
+    }
+    }
+    `;
+
+
 
 const ListarProyectos = () => {
+
+    const { loading, data, error } = useQuery(GET_PROYECTOS);
+
+
+
     return (
+
+        <>
+            {loading && <p>Cargando ...</p>}
+            {error && <p>Se ha producido un error</p>}
+            {
+                data &&
+
         <div className='login2'>
 
             <div class="encabezado">
@@ -12,6 +57,7 @@ const ListarProyectos = () => {
 
             <div class="divTabla">
                 <table id="tablaIngresoDatos">
+                <thead> 
                     <tr>
                         <td><h5>ID Proyecto</h5></td>
                         <td><h5>Nombre</h5></td>
@@ -21,12 +67,18 @@ const ListarProyectos = () => {
                         <td><h5>Fase</h5></td>
                         <td><h5>Acción</h5></td>
                     </tr>
+                    </thead>
+                    <tbody>
 
-                    <tr>
-                        <td><h5>DATO</h5></td>
-                        <td><h5>DATO</h5></td>
-                        <td><h5>DATO</h5></td>
+                        {
+                    data.listarProyectos.map((Proyecto, index) => (
+
+                    <tr key={Proyecto.id} >
+                        <td><h5>{Proyecto.nombre}</h5></td>
+                        <td><h5>{Proyecto.lider}</h5></td>
+                        <td><h5>{Proyecto.estadoAprobacion}</h5></td>
                         <td><h5><select id="Aprobación" name="Aprobación">
+                            <option>{Proyecto.estadoAprobacion}</option>
                             <option value="Aprobado">Aprobado</option>
                             <option value="Rechazado">Rechazado</option>
                         </select></h5></td>
@@ -41,67 +93,9 @@ const ListarProyectos = () => {
                         </select></h5></td>
                         <td><h5><button class="Guardar">Ir</button></h5></td>
                     </tr>
-
-                    <tr>
-                        <td><h5>DATO</h5></td>
-                        <td><h5>DATO</h5></td>
-                        <td><h5>DATO</h5></td>
-                        <td><h5><select id="Aprobación" name="Aprobación">
-                            <option value="Aprobado">Aprobado</option>
-                            <option value="Rechazado">Rechazado</option>
-                        </select></h5></td>
-                        <td><h5><select id="estadoactual" name="estadoactual">
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
-                        </select></h5></td>
-                        <td><h5><select id="fase" name="fase">
-                            <option value="Iniciado">Iniciado</option>
-                            <option value="En desarrollo">En desarrollo</option>
-                            <option value="Terminado">Terminado</option>
-                        </select></h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
-                    </tr>
-
-                    <tr>
-                        <td><h5>DATO</h5></td>
-                        <td><h5>DATO</h5></td>
-                        <td><h5>DATO</h5></td>
-                        <td><h5><select id="Aprobación" name="Aprobación">
-                            <option value="Aprobado">Aprobado</option>
-                            <option value="Rechazado">Rechazado</option>
-                        </select></h5></td>
-                        <td><h5><select id="estadoactual" name="estadoactual">
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
-                        </select></h5></td>
-                        <td><h5><select id="fase" name="fase">
-                            <option value="Iniciado">Iniciado</option>
-                            <option value="En desarrollo">En desarrollo</option>
-                            <option value="Terminado">Terminado</option>
-                        </select></h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
-                    </tr>
-
-                    <tr>
-                        <td><h5>DATO</h5></td>
-                        <td><h5>DATO</h5></td>
-                        <td><h5>DATO</h5></td>
-                        <td><h5><select id="Aprobación" name="Aprobación">
-                            <option value="Aprobado">Aprobado</option>
-                            <option value="Rechazado">Rechazado</option>
-                        </select></h5></td>
-                        <td><h5><select id="estadoactual" name="estadoactual">
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
-                        </select></h5></td>
-                        <td><h5><select id="fase" name="fase">
-                            <option value="Iniciado">Iniciado</option>
-                            <option value="En desarrollo">En desarrollo</option>
-                            <option value="Terminado">Terminado</option>
-                        </select></h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
-                    </tr>
-
+                    ))
+                }
+                    </tbody>
                     
                 </table>
 
@@ -121,6 +115,9 @@ const ListarProyectos = () => {
 
             </div>
         </div>
+                }
+        </>
+
     )
 }
 
