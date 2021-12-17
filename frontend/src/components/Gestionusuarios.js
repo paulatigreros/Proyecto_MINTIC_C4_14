@@ -48,6 +48,8 @@ const Gestionusuarios = () => {
                         <span>Buscar</span>
                         <input type="text" class="redondo" />
                     </div>
+
+                    
                     <div class="divTabla">
                         <table>
 

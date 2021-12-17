@@ -65,6 +65,7 @@ const AvanceType = new GraphQLObjectType({
         proyectoId: { type: GraphQLID },
         usuarioId: { type: GraphQLID },
         fechaAvance: { type: GraphQLString },
+        nombreProyecto:{type: GraphQLString},
     }),
 })
 
@@ -171,13 +172,13 @@ const RootQuery = new GraphQLObjectType({
             },
             resolve(_, args, context) {
                 console.log(context);
-                if (context.rol==="Estudiante") 
-                {
+               /*  if (context.rol==="Estudiante") 
+                { */
                     return Avances.find({usuarioId:context.uid});
-                }
+                 /*}
                 else {
                     return null
-                }
+                } */
             }
         },
 
@@ -188,17 +189,17 @@ const RootQuery = new GraphQLObjectType({
                 
             },
             async resolve  (_, args, context) {
-                console.log(context);
-                if (context.rol==="Lider") 
+                 console.log(context);
+                /*if (context.rol==="Lider") 
                 
-                {
+                { */
                      return await Proyectos.find({lider:context.uid});
                     
 
-                }
-                else {
+                /*}
+                 else {
                     return null
-                }
+                } */
             }
         },            
 

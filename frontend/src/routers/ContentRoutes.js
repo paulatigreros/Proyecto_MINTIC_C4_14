@@ -5,7 +5,7 @@ import Edicionproyectos from '../components/Edicionproyectos';
 import Actualizaravance from '../components/Actualizaravance';
 import Gestionavances from '../components/Gestionavances';
 import Gestionsolicitudes from '../components/Gestionsolicitudes';
-
+import ListarAvancelider from '../components/ListarAvancelider';
 import ActualizarObservaciones from '../components/ActualizarObservaciones';
 import CrearAvance from "../components/CrearAvance";
 import CrearSolicitud from "../components/CrearSolicitud";
@@ -29,7 +29,7 @@ export const ContentRoutes = () => {
 <Route exact path="/Actualizaravance" element={<Actualizaravance/>} />
 <Route exact path="/Gestionavances" element={<Gestionavances/>} />
 <Route exact path="/Gestionsolicitudes" element={<Gestionsolicitudes/>} />
-
+<Route exact path="/ListarAvancelider" element={<ListarAvancelider/>} />
 <Route exact path="/ActualizarObservaciones" element={<ActualizarObservaciones/>} />
 <Route exact path="/CrearAvance" element={<CrearAvance/>} />
 <Route exact path="/CrearSolicitud" element={<CrearSolicitud/>} />

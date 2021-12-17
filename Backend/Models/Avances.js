@@ -17,6 +17,11 @@ const AvancesSchema = Schema({
         require:true
     },
 
+    nombreProyecto:{
+        type:String,
+        require:true
+    },
+
     usuarioId:{
         type:String,
         require:true
