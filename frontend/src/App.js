@@ -1,13 +1,15 @@
 import React from 'react';
 import './App.css';
+import AuthProvider from './providers/Authprovider';
 import AppRouter from './routers/AppRouter'
 
 
 const App = () => {
   return (
-    <div>
+    <AuthProvider>
       <AppRouter/>
-    </div>
+    </AuthProvider>
+
   )
 }
 

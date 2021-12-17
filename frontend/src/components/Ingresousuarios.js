@@ -2,7 +2,15 @@ import React from 'react'
 import '../App.css'
 import {Link} from "react-router-dom";
 
-const Ingresousuarios = () => {
+const Ingresousuarios = (props) => {
+
+    /* const [crearUsuario] = useMutation(SET_USUARIO)
+
+    var id = props.location.listProductos ?props.location.listProductos.productos.ID:"";
+    var descripcion = props.location.listProductos ?props.location.listProductos.productos.Descripcion:"";
+    var valorUnitario = props.location.listProductos ?props.location.listProductos.productos.ValorUnitario:"";
+ */
+
     return (
         <div className='login2'>
             <div class="encabezado">

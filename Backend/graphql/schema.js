@@ -50,6 +50,7 @@ const UsuarioType = new GraphQLObjectType({
         estado: { type: GraphQLString },
         rol: { type: GraphQLString },
         proyectos_asignados: { type: GraphQLString },
+        token: { type: GraphQLString },
     }),
 })
 
@@ -267,9 +268,13 @@ const RootQuery = new GraphQLObjectType({
 
                 if (validarPassword && Usuario.estado === "Autorizado") {
                     const token = await generarJwt(Usuario.id, Usuario.nombre, Usuario.rol)
-                    console.log(token);
+                    return {token,
+                       id: Usuario.id,
+                       nombre:Usuario.nombre,
+                       rol: Usuario.rol
 
                 }
+            }
 
                 else {
                     return "Usuario o contraseña incorrecto";
