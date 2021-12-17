@@ -1,15 +1,28 @@
 import React from 'react'
 import '../App.css'
 import { useQuery } from '@apollo/client';
-import GET_USUARIOS from '../Apollo/gql/getUsuarios' 
+import { gql } from '@apollo/client'
+
+const GET_USUARIOS = gql`
+query{
+  
+    listarUsuarios {
+      id
+      nombre
+      password
+      correo
+      estado
+      rol
+    }
+  }
+    `;
+
 
 const Gestionusuarios = () => {
 
     const { loading, data, error } = useQuery(GET_USUARIOS);
 
-    const handleDelete = (id) => {
-        console.log('delete');
-    }
+
 
     return (
 
@@ -41,29 +54,38 @@ const Gestionusuarios = () => {
                             <thead>
 
                                 <tr>
-                                    <th>Id Usuario</th>
-                                    <th>Nombre</th>
-                                    <th>Rol</th>
-                                    <th>Correo</th>
+                                    {/* <th scope="col">Id Usuario</th> */}
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col" >Rol</th>
+                                    <th scope="col">Correo</th>
                                     <th>Estado</th>
                                 </tr>
 
                             </thead>
                             <tbody>
+
                                 {
+
+
                                     data.listarUsuarios.map((Usuario, index) => (
-                                        <tr key={Usuario._id}>
-                                            <td>{Usuario._id}</td>
-                                            <td>{Usuario.Nombre}</td>
-                                            <td>{Usuario.Rol}</td>
-                                            <td>{Usuario.Correo}</td>
+                                        <tr key={Usuario.id}>
+                                            {/* <td>{usuario._id}</td> */}
+                                            <td>{Usuario.nombre}</td>
+                                            <td>{Usuario.rol}</td>
+                                            <td>{Usuario.correo}</td>
                                             <td><select >
+                                                <option>{Usuario.estado}</option>
                                                 <option>Pendiente</option>
                                                 <option>Autorizado</option>
                                                 <option>No Autorizado</option>
                                             </select></td>
                                         </tr>
+
                                     ))
+
+
+
+
                                 }
 
                             </tbody>

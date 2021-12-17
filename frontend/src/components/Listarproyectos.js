@@ -39,7 +39,7 @@ const ListarProyectos = () => {
                             <option value="En desarrollo">En desarrollo</option>
                             <option value="Terminado">Terminado</option>
                         </select></h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
+                        <td><h5><button class="Guardar"><span><Link to="/IngresoProyecto"> ir</Link></span>  </button></h5></td>
                     </tr>
 
                     <tr>
@@ -59,7 +59,7 @@ const ListarProyectos = () => {
                             <option value="En desarrollo">En desarrollo</option>
                             <option value="Terminado">Terminado</option>
                         </select></h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
+                        <td><h5><button class="Guardar"><span><Link to="/IngresoProyecto"> ir</Link></span>  </button></h5></td>
                     </tr>
 
                     <tr>
@@ -79,7 +79,7 @@ const ListarProyectos = () => {
                             <option value="En desarrollo">En desarrollo</option>
                             <option value="Terminado">Terminado</option>
                         </select></h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
+                        <td><h5><button class="Guardar"><span><Link to="/IngresoProyecto"> ir</Link></span>  </button></h5></td>
                     </tr>
 
                     <tr>
@@ -99,7 +99,7 @@ const ListarProyectos = () => {
                             <option value="En desarrollo">En desarrollo</option>
                             <option value="Terminado">Terminado</option>
                         </select></h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
+                        <td><h5><button class="Guardar"><span><Link to="/IngresoProyecto"> ir</Link></span>  </button></h5></td>
                     </tr>
 
                     

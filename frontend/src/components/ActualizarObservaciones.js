@@ -42,7 +42,7 @@ const ActualizarObservaciones = () => {
                             </button>
                         </h5></td>
                         <td ><h5>
-                            <button class="Guardar"><span><Link to="/IngresoProyecto">Atrás</Link></span>
+                            <button class="Guardar"><span><Link to="/ListarAvanceEstudiante">Atrás</Link></span>
                             </button>
                         </h5></td>
                     </tr>

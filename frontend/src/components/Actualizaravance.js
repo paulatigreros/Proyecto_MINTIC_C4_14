@@ -7,7 +7,7 @@ import {
 
 export const Actualizaravance = () => {
     return (
-        <div>
+        <div className='login2'>
            
            <div class="encabezado">
                 <h5>Avances - Actualización </h5>

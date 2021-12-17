@@ -25,7 +25,7 @@ const ListarAvanceEstudiante = () => {
                         <td><h5>DATO</h5></td>
                         <td><h5>DATO</h5></td>
                         <td><h5>DATO</h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
+                        <td><h5><button class="Guardar"><span><Link to="/ActualizarObservaciones"> ir</Link></span>  </button></h5></td>
                     </tr>
                     
                     <tr>
@@ -33,21 +33,21 @@ const ListarAvanceEstudiante = () => {
                         <td><h5>DATO</h5></td>
                         <td><h5>DATO</h5></td>
                         <td><h5>DATO</h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
+                        <td><h5><button class="Guardar"><span><Link to="/ActualizarObservaciones"> ir</Link></span></button></h5></td>
                     </tr>
                     <tr>
                         <td><h5>DATO</h5></td>
                         <td><h5>DATO</h5></td>
                         <td><h5>DATO</h5></td>
                         <td><h5>DATO</h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
+                        <td><h5><button class="Guardar"><span><Link to="/ActualizarObservaciones"> ir</Link></span></button></h5></td>
                     </tr>
                     <tr>
                         <td><h5>DATO</h5></td>
                         <td><h5>DATO</h5></td>
                         <td><h5>DATO</h5></td>
                         <td><h5>DATO</h5></td>
-                        <td><h5><button class="Guardar">Ir</button></h5></td>
+                        <td><h5><button class="Guardar"><span><Link to="/ActualizarObservaciones"> ir</Link></span></button></h5></td>
                     </tr>
                 </table>
 

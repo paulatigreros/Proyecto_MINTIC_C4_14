@@ -49,6 +49,7 @@ const UsuarioType = new GraphQLObjectType({
         estado: { type: GraphQLString },
         rol: { type: GraphQLString },
         proyectos_asignados: { type: GraphQLString },
+        token: { type: GraphQLString },
     }),
 })
 
