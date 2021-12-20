@@ -230,13 +230,13 @@ const RootQuery = new GraphQLObjectType({
             args: { lider: { type: GraphQLID } },
 
             resolve(_, { lider }, context) {
-                console.log(context);
-                if (context.user.auth) {
+                /* console.log(context);
+                if (context.user.auth) { */
                     return Proyectos.find({ lider }, { "solicitudes": 1 })
-                }
-                else {
+                /* } */
+                /* else {
                     return null
-                }
+                } */
             }
         },
 

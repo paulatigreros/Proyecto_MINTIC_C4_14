@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 const GET_AVANCES_LIDER = gql`
-query{
+query signin($lider: String!
   
     listarAvanceslider{
         nombreProyecto
