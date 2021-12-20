@@ -9,28 +9,33 @@ const GET_PROYECTOS = gql`
 
 query{
     listarProyectos {
-      nombreProyecto
-      objetivosGenerales
-      objetivosEspecificos
-      presupuesto
-      estadoAprobacion
-      estadoActual
-      fase
-      lider
-      avance{
-          descripcion
-          observacion
-          proyectoId
+        nombreProyecto
+        objetivosGenerales
+        objetivosEspecificos
+        presupuesto
+        estadoAprobacion
+        estadoActual
+        fase
+        lider
+        
+        datoslider{
+          
+          nombre
+        }
+        avance{
+            descripcion
+            observacion
+            proyectoId
+        }
+        solicitud{
+            usuarioId
+            fechaIngreso
+            fechaEgreso
+            estadoSolicitud
+            proyectoId
+        }
       }
-      solicitud{
-          usuarioId
-          fechaIngreso
-          fechaEgreso
-          estadoSolicitud
-          proyectoId
       }
-    }
-    }
     `;
 
 
@@ -59,34 +64,36 @@ const ListarProyectos = () => {
                 <table id="tablaIngresoDatos">
                 <thead> 
                     <tr>
-                        <td><h5>ID Proyecto</h5></td>
-                        <td><h5>Nombre</h5></td>
-                        <td><h5>Líder</h5></td>
-                        <td><h5>Estado aprobación</h5></td>
-                        <td><h5>Estado actual</h5></td>
-                        <td><h5>Fase</h5></td>
-                        <td><h5>Acción</h5></td>
+                        <td scope="col"><h5>ID Proyecto</h5></td>
+                        <td scope="col"><h5>Nombre</h5></td>
+                        <td scope="col"><h5>Líder</h5></td>
+                        <td scope="col"><h5>Estado aprobación</h5></td>
+                        <td scope="col"><h5>Estado actual</h5></td>
+                        <td scope="col"><h5>Fase</h5></td>
+                        <td scope="col"><h5>Acción</h5></td>
                     </tr>
                     </thead>
                     <tbody>
 
                         {
                     data.listarProyectos.map((Proyecto, index) => (
-
+                        
                     <tr key={Proyecto.id} >
-                        <td><h5>{Proyecto.nombre}</h5></td>
-                        <td><h5>{Proyecto.lider}</h5></td>
-                        <td><h5>{Proyecto.estadoAprobacion}</h5></td>
+                        <td>{Proyecto.id}</td>
+                        <td>{Proyecto.nombreProyecto}</td>
+                        <td>{Proyecto.lider}</td>
                         <td><h5><select id="Aprobación" name="Aprobación">
                             <option>{Proyecto.estadoAprobacion}</option>
                             <option value="Aprobado">Aprobado</option>
                             <option value="Rechazado">Rechazado</option>
                         </select></h5></td>
                         <td><h5><select id="estadoactual" name="estadoactual">
+                        <option>{Proyecto.estadoActual} </option>
                             <option value="Activo">Activo</option>
                             <option value="Inactivo">Inactivo</option>
                         </select></h5></td>
                         <td><h5><select id="fase" name="fase">
+                            <option> {Proyecto.fase} </option>                           
                             <option value="Iniciado">Iniciado</option>
                             <option value="En desarrollo">En desarrollo</option>
                             <option value="Terminado">Terminado</option>

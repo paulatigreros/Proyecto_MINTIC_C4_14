@@ -43,13 +43,12 @@ const {
 const UsuarioType = new GraphQLObjectType({
     name: "Usuario",
     fields: () => ({
-        id: { type: GraphQLID},
+        id:{ type: GraphQLID },
         nombre: { type: GraphQLString },
         password: { type: GraphQLString },
         correo: { type: GraphQLString },
         estado: { type: GraphQLString },
         rol: { type: GraphQLString },
-        proyectos_asignados: { type: GraphQLString },
         token: { type: GraphQLString },
     }),
 })
@@ -92,10 +91,16 @@ const ProyectoType = new GraphQLObjectType({
         estadoActual: { type: GraphQLString },
         fase: { type: GraphQLString },
         lider: { type: GraphQLID },
+        datoslider:{
+                type: new GraphQLList(UsuarioType),
+                resolve(parent, args) {
+                    const ID = parent.lider
+                    return Usuarios.find({_id:ID})
+                },
+        },
+        
         fechaInicioproyecto: { type: GraphQLString },
         fechaFinalproyecto: { type: GraphQLString },
-
-
         avance: {
             type: new GraphQLList(AvanceType),
             resolve(parent, args) {
@@ -145,21 +150,21 @@ const RootQuery = new GraphQLObjectType({
 
 
              async resolve(_, args, context) {
-/*                 console.log(context);
-                if (context.rol==="Administrador" || context.rol==="Estudiante") { */
+               console.log(context);
+                if (context.rol==="Administrador" || context.rol==="Estudiante") {
                     return await Proyectos.find()
-                /* } */
+                 }
 
-                /* else if(context.rol==="Lider"){ */
+                 else if(context.rol==="Lider"){
 
-                    /* const proyectos = await Proyectos.find({ lider:context.uid })
-                    return proyectos */
+                    const proyectos = await Proyectos.find({ lider:context.uid })
+                    return proyectos 
 
-                /* } */
+                }
 
-                /* else {
-                    return null
-                } */
+                else {
+                    throw new Error 
+                } 
             }
 
         },
@@ -171,13 +176,13 @@ const RootQuery = new GraphQLObjectType({
             },
             resolve(_, args, context) {
                 console.log(context);
-                if (context.rol==="Estudiante") 
-                {
+                /* if (context.rol==="Estudiante") 
+                { */
                     return Avances.find({usuarioId:context.uid});
-                }
+                /* }
                 else {
                     return null
-                }
+                } */
             }
         },
 
@@ -207,21 +212,31 @@ const RootQuery = new GraphQLObjectType({
 
             resolve(_, args, context) {
                 console.log(context);
-               /*  if (context.rol==="Administrador") { */
+              if (context.rol==="Administrador") { 
                     return Usuarios.find()
-               /*  } */
+                } 
 
-                /* else if(context.rol==="Lider"){ */
+                else if(context.rol==="Lider") {
 
-                    /* return Usuarios.find({ rol: "Estudiante" })
+                    return Usuarios.find({ rol: "Estudiante" })
 
-                } */
+                } 
 
-                /* else {
+                else {
                     return null
-                } */
+                } 
             }
         },
+
+
+         listarUsuariosporId: {
+            type: new GraphQLList(UsuarioType),
+            args:{ id:{type:GraphQLString}},
+            async  resolve(_, args, context) {
+                console.log(context);        
+                    return await Usuarios.find({_id:args.id})
+            }
+        }, 
 
 
         listarSolicitudes: {
@@ -245,6 +260,7 @@ const RootQuery = new GraphQLObjectType({
 
         /* Validar usuario  */
         ValidarUsuario: {
+            name:"login",
             type: UsuarioType,
             args: {
                 correo: { type: GraphQLString },
@@ -257,11 +273,11 @@ const RootQuery = new GraphQLObjectType({
                 console.log(Usuario.rol)
 
                 if (Usuarios === '') {
-                    console.log("Usuario no encontrado")
+                    throw new Error("Usuario no encontrado")
                 }
 
                 if (Usuario.estado === "Pendiente") {
-                    console.log("El usuario no ha sido autorizado por el administrador")
+                    throw new Error("El usuario no ha sido autorizado por el administrador")
                 }
 
                 const validarPassword = bcrypt.compareSync(password, Usuario.password)

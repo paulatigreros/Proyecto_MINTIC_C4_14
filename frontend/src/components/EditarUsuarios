@@ -6,18 +6,35 @@ import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react'
+import { useQuery } from '@apollo/client';
+
+
+const GET_USUARIOS = gql`
+query{
+  
+    listarUsuariosporId {
+      id
+      nombre
+      password
+      correo
+      estado
+      rol
+    }
+  }
+    `;
+
 
 
 
 
 const SET_USUARIO = gql`
-        mutation ActualizarUsuarioPersonales ($nombre: String, $correo: String, $password: String){            
-            ActualizarUsuarioPersonales(
+        mutation crearUsuario ($nombre: String, $rol: String , $correo: String, $password: String){            
+            AgregarUsuario(
                 
                 nombre: $nombre,
                 password: $password,
                 correo: $correo,
-        
+                rol: $rol
             ) {
                 nombre
                 password
@@ -27,7 +44,11 @@ const SET_USUARIO = gql`
     `;
 
 
-const DatosPersonales = () => {
+const EditarUsuarios = ({ userid }) => {
+
+    console.log('userid', userid);
+
+    const { loading, data, error } = useQuery(GET_USUARIOS,{variables:{id:userid}});
 
     const navigate = useNavigate();
 
@@ -49,7 +70,7 @@ const DatosPersonales = () => {
         if (data) {
             console.log('data', data);
             
-            navigate('/PantallaInicio', {
+            navigate('/', {
                 replace: true
             })
         }
@@ -61,7 +82,7 @@ const DatosPersonales = () => {
         <form onSubmit={handleSubmit(handleCreate)}>
             <div className='login2'>
                 <div class="encabezado">
-                    <h5>Datos Personales Actualización</h5>
+                    <h5>Editar usuario</h5>
                 </div>
 
                 <div class="divTabla">
@@ -71,9 +92,19 @@ const DatosPersonales = () => {
                         <tr>
                             <td><h5>Nombre</h5></td>
                             <td class="Izquierda">
-                                <input type="text" size="70" placeholder="Nombre" {...register("nombre", {maxLength: 80 })} /></td>
+                                <input type="text" size="70" value=data. placeholder="Nombre" {...register("nombre", {maxLength: 80 })} /></td>
                         </tr>
 
+                        <tr>
+                            <td><h5>Roles de usuario</h5></td>
+                            <td class="Izquierda">
+                                <select {...register("rol", {})}>
+                                    <option value="Administrador">Administrador</option>
+                                    <option value="Lider">Lider</option>
+                                    <option value="Estudiante">Estudiante</option>
+                                </select>
+                            </td>
+                        </tr>
 
                         <tr>
                             <td><h5>Correo electrónico</h5></td>
@@ -128,4 +159,4 @@ const DatosPersonales = () => {
     )
 }
 
-export default DatosPersonales
+export default EditarUsuarios

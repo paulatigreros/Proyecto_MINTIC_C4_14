@@ -66,12 +66,21 @@ export const Menu = () => {
                 <div class="item">
                     <a href={() => false}>
                         <div class="icon"><img src={Agregar} alt=""/></div>
-                        <div class="title"><span><Link to="/ListarAvanceEstudiante">Avances</Link></span></div>
+                        <div class="title"><span><Link to="/ListarAvanceEstudiante">Avances - Estudiantes</Link></span></div>
                     </a>
                 </div> 
                 <div class="item separator">
-
                 </div>
+
+                <div class="item">
+                    <a href={() => false}>
+                        <div class="icon"><img src={Agregar} alt=""/></div>
+                        <div class="title"><span><Link to="/ListarAvancelider">Avances - Lider</Link></span></div>
+                    </a>
+                </div> 
+                <div class="item separator">
+                </div> 
+
 
 
             </div>

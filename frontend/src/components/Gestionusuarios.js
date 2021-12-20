@@ -2,6 +2,7 @@ import React from 'react'
 import '../App.css'
 import { useQuery } from '@apollo/client';
 import { gql } from '@apollo/client'
+import { NavLink } from 'react-router-dom'
 
 const GET_USUARIOS = gql`
 query{
@@ -16,6 +17,8 @@ query{
     }
   }
     `;
+
+
 
 
 const Gestionusuarios = () => {
@@ -44,10 +47,7 @@ const Gestionusuarios = () => {
 
 
                     </div>
-                    <div class="filtro">
-                        <span>Buscar</span>
-                        <input type="text" class="redondo" />
-                    </div>
+                    
                     <div class="divTabla">
                         <table>
 
@@ -73,12 +73,12 @@ const Gestionusuarios = () => {
                                             <td>{Usuario.nombre}</td>
                                             <td>{Usuario.rol}</td>
                                             <td>{Usuario.correo}</td>
-                                            <td><select >
-                                                <option>{Usuario.estado}</option>
-                                                <option>Pendiente</option>
-                                                <option>Autorizado</option>
-                                                <option>No Autorizado</option>
-                                            </select></td>
+                                            <td>{Usuario.estado}</td>
+                                            <NavLink className="Guardar" to={`/EdicionUsuarios/${Usuario.id}`}>
+                                            Editar
+                                        </NavLink>
+                    
+
                                         </tr>
 
                                     ))
