@@ -10,9 +10,8 @@ import { useQuery } from '@apollo/client';
 
 
 const GET_USUARIOS = gql`
-query{
-  
-    listarUsuariosporId {
+query ListarUsuarios($id:String) {
+    listarUsuariosporId (id: $id){
       id
       nombre
       password
@@ -28,13 +27,11 @@ query{
 
 
 const SET_USUARIO = gql`
-        mutation crearUsuario ($nombre: String, $rol: String , $correo: String, $password: String){            
+        mutation ActualizarEstadoUsuario ($id:String, $estado: String){            
             AgregarUsuario(
                 
-                nombre: $nombre,
-                password: $password,
-                correo: $correo,
-                rol: $rol
+                nombre: $id,
+                password: $estado,
             ) {
                 nombre
                 password
@@ -54,15 +51,15 @@ const EditarUsuarios = ({ userid }) => {
 
     const { register, handleSubmit} = useForm();
 
-    const [AgregarUsuario, { data, loading, error }] = useMutation(SET_USUARIO)
-    console.log({data})
+    /* var [AgregarUsuario, { data, loading, error }] = useMutation(SET_USUARIO)
+    console.log({data}) */
 
-    const handleCreate = (args) => {
+    /* const handleCreate = (args) => {
 
-        const { nombre, rol, correo, password} = args;
-        AgregarUsuario({ variables: { nombre, rol, correo, password} });
+        const {id,estado} = args;
+        AgregarUsuario({ variables: { id,estado} });
         console.log({args})
-    }
+    } */
 
     
 
@@ -79,7 +76,7 @@ const EditarUsuarios = ({ userid }) => {
     return (
 
 
-        <form onSubmit={handleSubmit(handleCreate)}>
+        <form onSubmit={handleSubmit/* (handleCreate) */}>
             <div className='login2'>
                 <div class="encabezado">
                     <h5>Editar usuario</h5>
@@ -89,34 +86,43 @@ const EditarUsuarios = ({ userid }) => {
 
                     <table id="tablaIngresoDatos">
 
-                        <tr>
-                            <td><h5>Nombre</h5></td>
+                    <tr>
+                            <td><h5>Id</h5></td>
                             <td class="Izquierda">
-                                <input type="text" size="70" value=data. placeholder="Nombre" {...register("nombre", {maxLength: 80 })} /></td>
+                                <input type="text" size="70" value={data.listarUsuariosporId.id} placeholder="Id" {...register("id", {maxLength: 80 })} /></td>
                         </tr>
 
                         <tr>
-                            <td><h5>Roles de usuario</h5></td>
+                            <td><h5>Nombre</h5></td>
                             <td class="Izquierda">
-                                <select {...register("rol", {})}>
-                                    <option value="Administrador">Administrador</option>
-                                    <option value="Lider">Lider</option>
-                                    <option value="Estudiante">Estudiante</option>
-                                </select>
-                            </td>
+                                <input type="text" size="70" value={data.listarUsuariosporId.nombre} placeholder="Nombre" {...register("nombre", {maxLength: 80 })} /></td>
+                        </tr>
+
+
+                        <tr>
+                            <td><h5>Rol</h5></td>
+                            <td class="Izquierda">
+                                <input type="text" size="70" value={data.listarUsuariosporId.rol} placeholder="rol" {...register("nombre", {maxLength: 80 })} /></td>
                         </tr>
 
                         <tr>
                             <td><h5>Correo electrónico</h5></td>
                             <td class="Izquierda">
-                                <input type="text" size="70" placeholder="Correo" {...register("correo", {})} />
+                                <input type="text" size="70" value={data.listarUsuariosporId.correo} placeholder="Correo" {...register("correo", {})} />
                             </td>
                         </tr>
 
                         <tr>
-                            <td><h5>Contraseña</h5></td>
-                            <td class="Izquierda"><input type="text" size="70" placeholder="Contraseña" {...register("password", {})} /></td>
+                            <td><h5>Roles de usuario</h5></td>
+                            <td class="Izquierda">
+                                <select defaultvalue ={data.listarUsuariosporId.estado} {...register("rol", {})}>
+                                    <option value="Administrador">Pendiente</option>
+                                    <option value="Lider">Autorizado</option>
+                                    <option value="Estudiante">No Autorizado</option>
+                                </select>
+                            </td>
                         </tr>
+
 
                         <div class="acciones" align="center">
 
@@ -127,26 +133,6 @@ const EditarUsuarios = ({ userid }) => {
 
                         </div>
 
-{/*                         <div class="acciones" align="center">
-                            <tr >
-                                <td > <h5>
-                                    <button class="Guardar">
-                                        Guardar
-                                    </button> */}
-
-
-                                {/* </h5></td>
-
-                                <td ><h5>
-                                    <button class="Guardar"><span><Link to="/">Atrás</Link></span>
-                                    </button>
-                                </h5></td>
-                            </tr> */}
-
-
-
-
-                        {/* </div> */}
                     </table>
 
 

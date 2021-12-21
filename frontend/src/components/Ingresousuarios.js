@@ -49,7 +49,7 @@ const Ingresousuarios = () => {
         if (data) {
             console.log('data', data);
             
-            navigate('/', {
+            navigate('/PantallaInicio', {
                 replace: true
             })
         }
