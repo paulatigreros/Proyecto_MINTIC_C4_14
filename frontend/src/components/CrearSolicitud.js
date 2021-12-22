@@ -16,7 +16,11 @@ const SET_SOLICITUD = gql`
                 fechaEgreso: $fechaEgreso
                 estado: $estado
             }) {
-
+                usuarioId
+                proyectoId
+                fechaIngreso
+                fechaEgreso
+                estadoSolicitud
             }               
         }
     `;

@@ -294,7 +294,7 @@ const RootQuery = new GraphQLObjectType({
                 }
 
                 else {
-                    return "Usuario o contraseña incorrecto";
+                    throw new Error ("Usuario o contraseña incorrecto");
                 }
 
 

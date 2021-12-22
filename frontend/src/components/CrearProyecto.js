@@ -10,17 +10,22 @@ import { useForm } from 'react-hook-form';
 
 const SET_PROYECTO = gql`
         mutation agregarProyecto($nombreProyecto: String, $objetivosGenerales: String , $objetivosEspecificos: String ,$presupuesto: String) {            
-            agregarProyecto(proyecto : {
+            agregarProyecto(proyecto:{
                 nombreProyecto: $proyectoId
                 objetivosGenerales: $usuarioId
                 objetivosEspecificos: $fechaIngreso
                 presupuesto: $fechaEgreso
-                estadoAprobación: 'Pendiente'
-                estadoActual: 'Inactivo'
-                fase: ''
-                lider: context.uid
-            }) {
 
+            }) 
+            {
+                nombreProyecto
+                objetivosGenerales
+                objetivosEspecificos
+                presupuesto
+                estadoAprobacion
+                estadoActual
+                fase
+                lider  
             }               
         }
     `;
@@ -94,7 +99,7 @@ export const CrearProyecto = () => {
 
                         <input type="submit" class="Guardar" />
 
-                        <button class="Guardar"><span><Link to="/">Atrás</Link></span>
+                        <button class="Guardar"><span><Link to="/Listarproyectos">Atrás</Link></span>
                         </button>
 
                     </div>

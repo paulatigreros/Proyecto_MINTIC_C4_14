@@ -13,7 +13,7 @@ const SET_AVANCE = gql`
                 proyectoId: $proyectoId
                 descripcion: $usuarioId
             }) {
-
+                descripcion
             }               
         }
     `;

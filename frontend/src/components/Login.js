@@ -17,6 +17,7 @@ const LOGIN_USUARIO = gql`
             {
                 token
                 rol
+                id
             }     
         }
     `;
@@ -118,7 +119,7 @@ function Login() {
                         </div>
                     </form>
                     {error && <div className="alert alert-danger" role="alert">
-                        Usuario o contraseña incorrectos
+                        Usuario no Autorizado o contraseña incorrecta
                     </div>}
                     <Link to="/Ingresousuarios"><input class="botones" type="submit" name="" value="Registrar Nuevo Usuario" /></Link>
 

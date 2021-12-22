@@ -4,12 +4,13 @@ import { Link } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import { gql } from '@apollo/client';
 import { useMutation } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams } from 'react-router-dom';
 import { useEffect } from 'react'
 import { useQuery } from '@apollo/client';
+import Gestionusuarios from './Gestionusuarios';
 
 
-const GET_USUARIOS = gql`
+const GET_USUARIOSBYID = gql`
 query ListarUsuarios($id:String) {
     listarUsuariosporId (id: $id){
       id
@@ -43,9 +44,12 @@ const SET_USUARIO = gql`
 
 const EditarUsuarios = ({ userid }) => {
 
+    const { action } = useParams();
+
+    { action === '' || action === undefined ? <Gestionusuarios /> : <EditarUsuarios userid={ action } />}
     console.log('userid', userid);
 
-    const { loading, data, error } = useQuery(GET_USUARIOS,{variables:{id:userid}});
+    const { loading, data, error } = useQuery(GET_USUARIOSBYID,{variables:{id:userid}});
 
     const navigate = useNavigate();
 

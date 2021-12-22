@@ -2,7 +2,8 @@ import React from 'react'
 import '../App.css'
 import { useQuery } from '@apollo/client';
 import { gql } from '@apollo/client'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
+import EditarUsuarios from './EditarUsuarios';
 
 const GET_USUARIOS = gql`
 query{
@@ -25,6 +26,7 @@ const Gestionusuarios = () => {
 
     const { loading, data, error } = useQuery(GET_USUARIOS);
 
+    
 
 
     return (
@@ -74,10 +76,19 @@ const Gestionusuarios = () => {
                                             <td>{Usuario.rol}</td>
                                             <td>{Usuario.correo}</td>
                                             <td>{Usuario.estado}</td>
+
+    
+                                            
                                             <NavLink className="Guardar" to={`/EdicionUsuarios/${Usuario.id}`}>
                                             Editar
                                         </NavLink>
-                    
+
+  
+
+                                        
+                                         
+                                        
+
 
                                         </tr>
 
