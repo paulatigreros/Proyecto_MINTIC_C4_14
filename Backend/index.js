@@ -1,11 +1,12 @@
 const { MongoClient } = require('mongodb');
 const mongoose = require("mongoose");
-const schema = require("./Backend/graphql/schema");
+const schema = require("./graphql/schema");
 const express = require('express');
 const { graphqlHTTP } = require("express-graphql");
 const app = express();
 const jwt = require("jsonwebtoken");
 const dotenv= require("dotenv");
+const cors = require("cors")
 
 dotenv.config();
 
@@ -42,7 +43,7 @@ const validarJwt = (req, res, next) => {
 
 
 app.use(validarJwt);
-
+app.use(cors())
 
 
 const dbConnection = async () =>{

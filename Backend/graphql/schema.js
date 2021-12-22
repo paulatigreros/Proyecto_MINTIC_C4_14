@@ -9,7 +9,7 @@ const Solicitudes = require("../Models/Solicitudes");
 const jwt = require("jsonwebtoken");
 const secret = "mi_llave"
 
-const generarJwt = (uid, nombre , rol) => {
+const generarJwt = (uid, nombre, rol) => {
     return new Promise((resolve, reject) => {
         const payload = {
             uid,
@@ -43,12 +43,13 @@ const {
 const UsuarioType = new GraphQLObjectType({
     name: "Usuario",
     fields: () => ({
+        id: { type: GraphQLID },
         nombre: { type: GraphQLString },
         password: { type: GraphQLString },
         correo: { type: GraphQLString },
         estado: { type: GraphQLString },
         rol: { type: GraphQLString },
-        proyectos_asignados: { type: GraphQLString },
+        token: { type: GraphQLString },
     }),
 })
 
@@ -63,7 +64,9 @@ const AvanceType = new GraphQLObjectType({
         proyectoId: { type: GraphQLID },
         usuarioId: { type: GraphQLID },
         fechaAvance: { type: GraphQLString },
+        lider: { type: GraphQLID },
     }),
+
 })
 
 const SolicitudType = new GraphQLObjectType({
@@ -90,10 +93,16 @@ const ProyectoType = new GraphQLObjectType({
         estadoActual: { type: GraphQLString },
         fase: { type: GraphQLString },
         lider: { type: GraphQLID },
+        datoslider: {
+            type: new GraphQLList(UsuarioType),
+            resolve(parent, args) {
+                const ID = parent.lider
+                return Usuarios.find({ _id: ID })
+            },
+        },
+
         fechaInicioproyecto: { type: GraphQLString },
         fechaFinalproyecto: { type: GraphQLString },
-
-
         avance: {
             type: new GraphQLList(AvanceType),
             resolve(parent, args) {
@@ -142,13 +151,21 @@ const RootQuery = new GraphQLObjectType({
             type: new GraphQLList(ProyectoType),
 
 
-            resolve(_, args, context) {
+            async resolve(_, args, context) {
                 console.log(context);
-                if (context.rol==="Administrador" || context.rol==="Estudiante") {
-                    return Proyectos.find()
+                if (context.rol === "Administrador" || context.rol === "Estudiante") {
+                    return await Proyectos.find()
                 }
+
+                else if (context.rol === "Lider") {
+
+                    const proyectos = await Proyectos.find({ lider: context.uid })
+                    return proyectos
+
+                }
+
                 else {
-                    return null
+                    throw new Error
                 }
             }
 
@@ -157,17 +174,17 @@ const RootQuery = new GraphQLObjectType({
         listarAvancesEstudiante: {
             type: new GraphQLList(AvanceType),
             args: {
-                
+
             },
             resolve(_, args, context) {
                 console.log(context);
-                if (context.rol==="Estudiante") 
-                {
-                    return Avances.find({usuarioId:context.uid});
-                }
+                /* if (context.rol==="Estudiante") 
+                { */
+                return Avances.find({ usuarioId: context.uid });
+                /* }
                 else {
                     return null
-                }
+                } */
             }
         },
 
@@ -175,51 +192,52 @@ const RootQuery = new GraphQLObjectType({
         listarAvanceslider: {
             type: new GraphQLList(ProyectoType),
             args: {
-                
+
             },
-            async resolve  (_, args, context) {
+            async resolve(_, args, context) {
                 console.log(context);
-                if (context.rol==="Lider") 
-                
-                {
-                     return await Proyectos.find({lider:context.uid});
-                    
+                if (context.rol === "Lider") {
+                    return await Proyectos.find({ lider: context.uid });
+
 
                 }
                 else {
                     return null
                 }
             }
-        },            
+        },
 
         listarUsuarios: {
             type: new GraphQLList(UsuarioType),
 
             resolve(_, args, context) {
                 console.log(context);
-                if (context.rol==="Administrador") {
+                if (context.rol === "Administrador") {
                     return Usuarios.find()
                 }
-                else {
-                    return null
-                }
-            }
-        },
 
+                else if (context.rol === "Lider") {
 
-        listarEstudiantes: {
-            type: new GraphQLList(UsuarioType),
-
-            resolve(_, args, context) {
-                console.log(context);
-                if (context.rol==="Lider") {
                     return Usuarios.find({ rol: "Estudiante" })
+
                 }
+
                 else {
                     return null
                 }
             }
         },
+
+
+        listarUsuariosporId: {
+            type: new GraphQLList(UsuarioType),
+            args: { id: { type: GraphQLString } },
+            async resolve(_, args, context) {
+                console.log(context);
+                return await Usuarios.find({ _id: args.id })
+            }
+        },
+
 
         listarSolicitudes: {
             type: new GraphQLList(ProyectoType),
@@ -237,28 +255,12 @@ const RootQuery = new GraphQLObjectType({
         },
 
 
-        listarProyectosLider: {
-            type: new GraphQLList(ProyectoType),
-
-            args: {
-
-            },
-            async resolve(_, args, context) {
-                console.log(context);
-                if (context.rol==="Lider") {
-                    const proyectos = await Proyectos.find({ lider:context.uid })
-                    return proyectos
-                }
-                else {
-                    return null
-                }
-            }
-        },
 
 
 
         /* Validar usuario  */
         ValidarUsuario: {
+            name: "login",
             type: UsuarioType,
             args: {
                 correo: { type: GraphQLString },
@@ -271,23 +273,28 @@ const RootQuery = new GraphQLObjectType({
                 console.log(Usuario.rol)
 
                 if (Usuarios === '') {
-                    console.log("Usuario no encontrado")
+                    throw new Error("Usuario no encontrado")
                 }
 
                 if (Usuario.estado === "Pendiente") {
-                    console.log("El usuario no ha sido autorizado por el administrador")
+                    throw new Error("El usuario no ha sido autorizado por el administrador")
                 }
 
                 const validarPassword = bcrypt.compareSync(password, Usuario.password)
 
                 if (validarPassword && Usuario.estado === "Autorizado") {
                     const token = await generarJwt(Usuario.id, Usuario.nombre, Usuario.rol)
-                    console.log(token);
+                    return {
+                        token,
+                        id: Usuario.id,
+                        nombre: Usuario.nombre,
+                        rol: Usuario.rol
 
+                    }
                 }
 
                 else {
-                    return "Usuario o contraseña incorrecto";
+                    throw new Error ("Usuario o contraseña incorrecto");
                 }
 
 
@@ -315,11 +322,11 @@ const Mutation = new GraphQLObjectType({
                 objetivosGenerales: { type: GraphQLString },
                 objetivosEspecificos: { type: GraphQLString },
                 presupuesto: { type: GraphQLInt },
-                
+
             },
             async resolve(_, args, context) {
                 console.log(context);
-                if (context.rol==="Lider") {
+                if (context.rol === "Lider") {
                     console.log(args);
                     const Proyecto = new Proyectos({
                         nombreProyecto: args.nombreProyecto,
@@ -340,7 +347,6 @@ const Mutation = new GraphQLObjectType({
             },
         },
 
-      
 
         AprobacionProyecto: {
             type: ProyectoType,
@@ -351,7 +357,7 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                if (context.rol==="Administrador") {
+                if (context.rol === "Administrador") {
                     return await Proyectos.findByIdAndUpdate(args.proyectoId,
                         {
                             estadoAprobacion: args.estadoAprobacion,
@@ -376,43 +382,45 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                if (context.rol==="Administrador") {
-                    const Proyecto = await Proyectos.findById(args.proyectoId,{"fase":1}) 
-                   
-                    if(args.estadoActual==="Activo" && Proyecto.fase===" "  ){
+                if (context.rol === "Administrador") {
+                    const Proyecto = await Proyectos.findById(args.proyectoId, { "fase": 1 })
 
-                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
-                        {
-                            estadoActual: args.estadoActual,
-                            fase:"Iniciado",
-                            fechaInicioproyecto:new Date()
+                    if (args.estadoActual === "Activo" && Proyecto.fase === " ") {
 
-                        }, {
-                        new: true
-                    });
+                        return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                            {
+                                estadoActual: args.estadoActual,
+                                fase: "Iniciado",
+                                fechaInicioproyecto: new Date()
+
+                            }, {
+                            new: true
+                        });
 
                     }
 
-                    else if(args.estadoActual==="Inactivo" ) {
+                    else if (args.estadoActual === "Inactivo") {
 
-                        await Solicitudes.find({proyectoId:args.proyectoId}).remove()
+                        await Solicitudes.find({ proyectoId: args.proyectoId }).remove()
 
                         return await Proyectos.findByIdAndUpdate(args.proyectoId,
-                        {
-                            estadoActual: args.estadoActual,
-                            fase:"Terminado",
-                            fechaFinalproyecto:new Date()
-                    
-                        }, {
-                        new: true
-                    });}
+                            {
+                                estadoActual: args.estadoActual,
+                                fase: "Terminado",
+                                fechaFinalproyecto: new Date()
 
-                    else{return await Proyectos.findByIdAndUpdate(args.proyectoId,
-                        {
-                            estadoActual: args.estadoActual,
-                        }, {
-                        new: true
-                    });
+                            }, {
+                            new: true
+                        });
+                    }
+
+                    else {
+                        return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                            {
+                                estadoActual: args.estadoActual,
+                            }, {
+                            new: true
+                        });
 
                     }
 
@@ -432,23 +440,23 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                if (context.rol==="Administrador") {
+                if (context.rol === "Administrador") {
 
-                    const Proyecto= await Proyectos.findById(args.proyectoId,{"fase":1})
-                    if (Proyecto.fase==="En desarrollo" && args.fase ==="Terminado" ){
+                    const Proyecto = await Proyectos.findById(args.proyectoId, { "fase": 1 })
+                    if (Proyecto.fase === "En desarrollo" && args.fase === "Terminado") {
 
-                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
-                        {
-                            fase: args.fase,
-                            estadoActual:"Inactivo",
-                            fechaFinalproyecto: new Date()
-                        }, {
-                        new: true
-                    });
+                        return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                            {
+                                fase: args.fase,
+                                estadoActual: "Inactivo",
+                                fechaFinalproyecto: new Date()
+                            }, {
+                            new: true
+                        });
 
                     }
 
-                    else{
+                    else {
                         return await Proyectos.findByIdAndUpdate(args.proyectoId,
                             {
                                 fase: args.fase,
@@ -473,22 +481,22 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                if (context.rol==="Administrador") {
+                if (context.rol === "Administrador") {
 
-                    const Proyecto= await Proyectos.findById(args.proyectoId,{"fase":1})
-                    if (Proyecto.fase!="Terminado" ){
+                    const Proyecto = await Proyectos.findById(args.proyectoId, { "fase": 1 })
+                    if (Proyecto.fase != "Terminado") {
 
-                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
-                        {
-                            estadoActual:args.estadoActual,
-                            fechaInicioproyecto: new Date(),
-                        }, {
-                        new: true
-                    });
+                        return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                            {
+                                estadoActual: args.estadoActual,
+                                fechaInicioproyecto: new Date(),
+                            }, {
+                            new: true
+                        });
 
                     }
 
-                    else{
+                    else {
                         return await Proyectos.findByIdAndUpdate(args.proyectoId,
                             {
                                 fase: args.fase,
@@ -517,44 +525,44 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                const Idproyecto=args.proyectoId
-                const proyecto= await Proyectos.findOne({Idproyecto},{"lider":1})
+                const Idproyecto = args.proyectoId
+                const proyecto = await Proyectos.findOne({ Idproyecto }, { "lider": 1 })
                 console.log(proyecto.lider);
-                if (proyecto.lider===context.uid) {
+                if (proyecto.lider === context.uid) {
 
-                    const proyecto = await Proyectos.findById(args.proyectoId,{"estadoActual":1})
-                    console.log (proyecto.estadoActual)
+                    const proyecto = await Proyectos.findById(args.proyectoId, { "estadoActual": 1 })
+                    console.log(proyecto.estadoActual)
 
-                    if(proyecto.estadoActual==="Activo" ){
+                    if (proyecto.estadoActual === "Activo") {
 
-                    return await Proyectos.findByIdAndUpdate(args.proyectoId,
-                        {
-                            nombreProyecto: args.nombreProyecto,
-                            objetivosGenerales: args.objetivosGenerales,
-                            objetivosEspecificos: args.objetivosEspecificos,
-                            presupuesto: args.presupuesto
-                        }, {
-                        new: true
-                    });
+                        return await Proyectos.findByIdAndUpdate(args.proyectoId,
+                            {
+                                nombreProyecto: args.nombreProyecto,
+                                objetivosGenerales: args.objetivosGenerales,
+                                objetivosEspecificos: args.objetivosEspecificos,
+                                presupuesto: args.presupuesto
+                            }, {
+                            new: true
+                        });
 
-                    
+
+
+                    }
+
+                    else {
+                        console.log("Este proyecto esta inactivo")
+                    }
 
                 }
 
-                else{
-                    console.log("Este proyecto esta inactivo")
-                }
-
-            }
-
-                else{
+                else {
                     console.log("Este proyecto no se encuentra asignado al usuario")
                 }
 
 
-                
 
-                
+
+
             },
         },
 
@@ -565,74 +573,86 @@ const Mutation = new GraphQLObjectType({
                 proyectoId: { type: GraphQLID },
                 descripcion: { type: GraphQLString },
 
-            },    
+            },
             async resolve(parent, args, context) {
                 console.log(context);
-                const proyectosolicitud = await Solicitudes.findOne({$and:[{proyectoId:args.proyectoId},
-                    {usuarioId:context.uid}]},{"estadoSolicitud":1})
-        
-                if(proyectosolicitud!=null){
-                    
-                const proyectoestado = await Proyectos.findById(args.proyectoId,{"estadoActual":1})
-                console.log(proyectosolicitud.estadoSolicitud==="Aprobado")
-                console.log(context.uid)    
-                if (proyectosolicitud.estadoSolicitud==="Aprobado") {
+                const proyectosolicitud = await Solicitudes.findOne({
+                    $and: [{ proyectoId: args.proyectoId },
+                    { usuarioId: context.uid }]
+                }, { "estadoSolicitud": 1 })
 
-                
-                    if(proyectoestado.estadoActual==="Activo"  ){
-                        const avanceproyecto = await Avances.find({proyectoId:args.proyectoId})
-                        console.log(avanceproyecto)
-                        console.log(args.proyectoId)
-                        if (avanceproyecto=="") {
-                            
-                            await Proyectos.findByIdAndUpdate(args.proyectoId,
-                                {
-                                    fase: "En desarrollo",
-    
-                                }, {
-                                new: true
-                            });   
-                        
-                            const Avance = new Avances({
-                            proyectoId: args.proyectoId,
-                            descripcion: args.descripcion,
-                            usuarioId: context.uid,
-                            fechaAvance:new Date()
-                            
-                        });
 
-                        return await Avance.save();
-                    }
-                        else{
-                            const Avance = new Avances({
-                                proyectoId: args.proyectoId,
-                                descripcion: args.descripcion,
-                                usuarioId: context.uid,
-                                fechaAvance:new Date()
+                if (proyectosolicitud != null) {
+
+                    const proyectoestado = await Proyectos.findById(args.proyectoId, { "estadoActual": 1 })
+                    console.log(proyectosolicitud.estadoSolicitud === "Aprobado")
+                    console.log(context.uid)
+                    if (proyectosolicitud.estadoSolicitud === "Aprobado") {
+
+
+                        if (proyectoestado.estadoActual === "Activo") {
+                            const avanceproyecto = await Avances.find({ proyectoId: args.proyectoId })
+                            console.log(avanceproyecto)
+                            console.log(args.proyectoId)
+                            if (avanceproyecto == "") {
+
+                                await Proyectos.findByIdAndUpdate(args.proyectoId,
+                                    {
+                                        fase: "En desarrollo",
+
+                                    }, {
+                                    new: true
+                                });
+
+
+                                const liderproyecto = await Proyectos.findById(args.proyectoid, { "lider": 1 })
                                 
-                            });
+                                console.log(liderproyecto)
+                                const Avance = new Avances({
+                                    proyectoId: args.proyectoId,
+                                    descripcion: args.descripcion,
+                                    usuarioId: context.uid,
+                                    fechaAvance: new Date(),
+                                    lider: liderproyecto
 
-                            return await Avance.save();
+                                });
+
+                                return await Avance.save();
+                            }
+                            else {
+
+                                const liderproyecto = await Proyectos.findById(args.proyectoid, { "lider": 1 })
+                                console.log(liderproyecto)
+                                const Avance = new Avances({
+                                    proyectoId: args.proyectoId,
+                                    descripcion: args.descripcion,
+                                    usuarioId: context.uid,
+                                    fechaAvance: new Date(),
+                                    lider: JSON.stringify(liderproyecto)
+
+                                });
+
+                                return await Avance.save();
+
+                            }
+
+
+
 
                         }
-                    
-                        
-
-                        
+                        else {
+                            console.log("Este proyecto esta inactivo")
+                        }
                     }
+
                     else {
-                        console.log("Este proyecto esta inactivo")
+                        console.log("Este usuario no esta aprobado en este proyecto")
                     }
-                }
 
-                else{
-                    console.log("Este usuario no esta aprobado en este proyecto")
                 }
-                
-            }
-            else{
-                console.log("Este usuario no tiene una solicitud a este proyecto")
-            }
+                else {
+                    console.log("Este usuario no tiene una solicitud a este proyecto")
+                }
 
 
             }
@@ -651,13 +671,13 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                    const salt = bcrypt.genSaltSync();
-                    const correo = args.correo
-                    const validar = await Usuarios.findOne({correo})
+                const salt = bcrypt.genSaltSync();
+                const correo = args.correo
+                const validar = await Usuarios.findOne({ correo })
 
-                    console.log(validar)
+                console.log(validar)
 
-                    if (validar==null){
+                if (validar == null) {
                     const Usuario = new Usuarios({
                         nombre: args.nombre,
                         correo: args.correo,
@@ -665,14 +685,14 @@ const Mutation = new GraphQLObjectType({
                         rol: args.rol,
                         password: bcrypt.hashSync(args.password, salt),
                     });
-                    
+
 
                     return await Usuario.save();
                 }
-                else{   
+                else {
                     console.log("Ya existe un usuario con el email digitado")
-            }
-                
+                }
+
 
             }
         },
@@ -686,7 +706,7 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                if (context.rol!="") {
+                if (context.rol != "") {
                     return await Usuarios.findByIdAndUpdate(context.uid,
                         {
                             nombre: args.nombre,
@@ -710,7 +730,7 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                if (context.rol==="Administrador") {
+                if (context.rol === "Administrador") {
                     return await Usuarios.findByIdAndUpdate(args.id,
                         {
                             estado: args.estado
@@ -718,10 +738,8 @@ const Mutation = new GraphQLObjectType({
                         new: true
                     });
                 }
-                else if (context.rol==="Lider" && args.estado!="No autorizado"
-                )
-
-                {
+                else if (context.rol === "Lider" && args.estado != "No autorizado"
+                ) {
                     return await Usuarios.findByIdAndUpdate(args.id,
                         {
                             estado: args.estado
@@ -749,7 +767,7 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                if (context.rol==="Estudiante") {
+                if (context.rol === "Estudiante") {
                     console.log(args);
                     const solicitud = new Solicitud({
                         usuarioId: args.usuarioId,
@@ -774,11 +792,11 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                const solicitud = await Solicitudes.findById(args.solicitudId,{"proyectoId":1})
+                const solicitud = await Solicitudes.findById(args.solicitudId, { "proyectoId": 1 })
                 console.log(solicitud.proyectoId)
-                const proyecto = await Proyectos.findById(solicitud.proyectoId,{"lider":1})
+                const proyecto = await Proyectos.findById(solicitud.proyectoId, { "lider": 1 })
                 console.log(proyecto.lider)
-                if (context.rol==="Lider" && proyecto.lider === context.uid ) {
+                if (context.rol === "Lider" && proyecto.lider === context.uid) {
                     return await Solicitudes.findByIdAndUpdate(args.solicitudId,
                         {
                             estadoSolicitud: args.estadoSolicitud
@@ -801,24 +819,24 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                const avance= await Avances.findById(args.id,{"proyectoId":1})
-                const proyectoestado = await Proyectos.findById(avance.proyectoId,{"estadoActual":1})
-                const proyectolider = await Proyectos.findById(avance.proyectoId,{"lider":1})
+                const avance = await Avances.findById(args.id, { "proyectoId": 1 })
+                const proyectoestado = await Proyectos.findById(avance.proyectoId, { "estadoActual": 1 })
+                const proyectolider = await Proyectos.findById(avance.proyectoId, { "lider": 1 })
                 console.log(proyectolider.lider)
 
-                if (proyectolider.lider===context.uid) {
+                if (proyectolider.lider === context.uid) {
 
-                    const proyecto = await Proyectos.findById(args.id,{"estadoActual":1})
-                    
+                    const proyecto = await Proyectos.findById(args.id, { "estadoActual": 1 })
 
-                    if(proyectoestado.estadoActual==="Activo" ){
 
-                    return await Avances.findByIdAndUpdate(args.id,
-                        {
-                            observacion: args.observacion
-                        }, {
-                        new: true
-                    });
+                    if (proyectoestado.estadoActual === "Activo") {
+
+                        return await Avances.findByIdAndUpdate(args.id,
+                            {
+                                observacion: args.observacion
+                            }, {
+                            new: true
+                        });
 
                     }
                     else {
@@ -826,13 +844,13 @@ const Mutation = new GraphQLObjectType({
                     }
                 }
 
-                else{
+                else {
                     console.log("Este usuario no tiene asignado el proyecto")
                 }
-                
+
             }
 
-            
+
         },
 
 
@@ -845,28 +863,30 @@ const Mutation = new GraphQLObjectType({
             },
             async resolve(parent, args, context) {
                 console.log(context);
-                const avance= await Avances.findById(args.id,{"proyectoId":1})
+                const avance = await Avances.findById(args.id, { "proyectoId": 1 })
                 console.log(avance.proyectoId)
-                const proyectosolicitud = await Solicitudes.findOne({$and:[{proyectoId:avance.proyectoId},
-                    {usuarioId:context.uid}]},{"estadoSolicitud":1})
+                const proyectosolicitud = await Solicitudes.findOne({
+                    $and: [{ proyectoId: avance.proyectoId },
+                    { usuarioId: context.uid }]
+                }, { "estadoSolicitud": 1 })
                 console.log(proyectosolicitud.estadoSolicitud)
 
-                const proyectoestado = await Proyectos.findById(avance.proyectoId,{"estadoActual":1})
-                console.log(proyectosolicitud.estadoSolicitud==="Aprobado")
+                const proyectoestado = await Proyectos.findById(avance.proyectoId, { "estadoActual": 1 })
+                console.log(proyectosolicitud.estadoSolicitud === "Aprobado")
 
-                if (proyectosolicitud.estadoSolicitud==="Aprobado") {
+                if (proyectosolicitud.estadoSolicitud === "Aprobado") {
 
-                    const proyecto = await Proyectos.findById(args.id,{"estadoActual":1})
-                    
+                    const proyecto = await Proyectos.findById(args.id, { "estadoActual": 1 })
 
-                    if(proyectoestado.estadoActual==="Activo" ){
 
-                    return await Avances.findByIdAndUpdate(args.id,
-                        {
-                            descripcion: args.descripcion
-                        }, {
-                        new: true
-                    });
+                    if (proyectoestado.estadoActual === "Activo") {
+
+                        return await Avances.findByIdAndUpdate(args.id,
+                            {
+                                descripcion: args.descripcion
+                            }, {
+                            new: true
+                        });
 
                     }
                     else {
@@ -874,19 +894,19 @@ const Mutation = new GraphQLObjectType({
                     }
                 }
 
-                else{
+                else {
                     console.log("Este usuario no esta vinculado al proyecto")
                 }
-                
+
             }
 
-            
+
         },
 
-    
 
 
-        
+
+
 
     }
 

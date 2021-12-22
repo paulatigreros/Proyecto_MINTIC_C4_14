@@ -27,7 +27,14 @@ const AvancesSchema = Schema({
         type:String,
         require:true
 
-    }
+    },
     
+    lider:{
+        type:String,
+        require:true
+
+    }
+
+
 })
 module.exports = model('AvancesModelo', AvancesSchema);
