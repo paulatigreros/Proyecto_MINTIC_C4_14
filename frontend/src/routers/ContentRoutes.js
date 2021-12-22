@@ -40,6 +40,7 @@ export const ContentRoutes = () => {
 <Route exact path="/PantallaInicio" element={<PantallaInicio/>} />
 <Route exact path="/ListarAvancelider" element={<ListarAvancelider/>} />
 <Route exact path="/EditarUsuarios" element={<EditarUsuarios/>} />
+<Route exact path="/Menu" element={<Menu/>} />
 </Routes>
         </>
     )
