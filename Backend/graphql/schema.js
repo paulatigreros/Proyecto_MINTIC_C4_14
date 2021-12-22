@@ -348,7 +348,6 @@ const Mutation = new GraphQLObjectType({
         },
 
 
-
         AprobacionProyecto: {
             type: ProyectoType,
             args: {
