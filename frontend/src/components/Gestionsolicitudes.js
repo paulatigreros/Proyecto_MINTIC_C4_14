@@ -5,7 +5,9 @@ import { gql } from '@apollo/client'
 import { Link } from "react-router-dom";
 
 const GET_SOLICITUDES = gql`
-query (
+query find($lider: ID!
+     
+  
         listarSolicitudes(lider: $lider) {
        
           solicitud{
